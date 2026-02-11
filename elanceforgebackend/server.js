@@ -7,6 +7,7 @@ const rateLimit = require("express-rate-limit");
 
 const connectDB = require("./config/db");
 const contactRoutes = require("./routes/contactRoutes");
+import mongoose from "mongoose";
 
 const app = express();
 
