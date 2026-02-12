@@ -37,12 +37,34 @@ const Reminder = () => {
 
       {openForm && (
         <div
-          className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center px-4"
+          className="fixed inset-0 z-[9999] bg-black/70 flex items-center justify-center px-4"
           role="dialog"
           aria-modal="true"
-          onClick={closeModal}
         >
-          <div onClick={(e) => e.stopPropagation()}>
+          {/* 👇 RELATIVE WRAPPER */}
+          <div
+            className="relative w-full max-w-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* ❌ CLOSE BUTTON — ALWAYS TOP RIGHT */}
+            <button
+              onClick={closeModal}
+              className="
+                absolute top-4 right-4
+                w-10 h-10
+                rounded-full
+                bg-white text-black
+                text-xl font-bold
+                flex items-center justify-center
+                hover:bg-orange-600 hover:text-white
+                transition
+                z-50
+              "
+              aria-label="Close popup"
+            >
+              ✕
+            </button>
+
             <ContactForm onClose={closeModal} />
           </div>
         </div>

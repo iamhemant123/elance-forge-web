@@ -69,20 +69,28 @@ const Faq = () => {
             return (
               <div
                 key={item.question}
-                className="bg-white border border-gray-200 rounded-xl p-5 transition-all duration-300 hover:shadow-md"
+                className="
+                  bg-white border border-gray-200 rounded-xl p-5
+                  transition-all duration-300
+                  hover:shadow-lg hover:scale-[1.02]
+                "
               >
                 <button
                   type="button"
                   onClick={() => toggleFaq(index)}
                   aria-expanded={isOpen}
-                  className="w-full flex justify-between items-center text-left focus:outline-none focus:ring-2 focus:ring-orange-600 rounded"
+                  className="
+                    w-full flex justify-between items-center text-left
+                    focus:outline-none focus:ring-0
+                  "
                 >
                   <h3 className="text-lg font-semibold text-gray-900">
                     {item.question}
                   </h3>
+
                   <span
                     aria-hidden="true"
-                    className="text-2xl font-bold text-orange-600"
+                    className="text-2xl font-bold text-orange-600 transition-transform duration-300"
                   >
                     {isOpen ? "−" : "+"}
                   </span>
