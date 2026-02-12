@@ -9,25 +9,33 @@ const router = express.Router();
 router.post(
   "/",
   [
-    body("name").trim().isLength({ min: 2 }),
-    body("email").isEmail().normalizeEmail(),
+    body("name").trim().isLength({ min: 2 }).withMessage("Name too short"),
+    body("email").isEmail().normalizeEmail().withMessage("Invalid email"),
     body("company").optional().trim().isLength({ max: 100 }),
-    body("subject").trim().isLength({ min: 3, max: 100 }),
-    body("message").trim().isLength({ min: 10, max: 1000 }),
+    body("subject")
+      .trim()
+      .isLength({ min: 3, max: 100 })
+      .withMessage("Invalid subject"),
+    body("message")
+      .trim()
+      .isLength({ min: 10, max: 1000 })
+      .withMessage("Message too short"),
   ],
   async (req, res) => {
     try {
+      // 🔍 Validation
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         return res.status(400).json({
           success: false,
           message: "Invalid form data",
+          errors: errors.array(),
         });
       }
 
       const { name, email, company, subject, message } = req.body;
 
-      // 1️⃣ Save to DB
+      // 💾 Save to Database
       const contact = await Contact.create({
         name,
         email,
@@ -36,37 +44,41 @@ router.post(
         message,
       });
 
-      // 2️⃣ Admin mail (AWAIT is MUST)
+      // 📩 ADMIN EMAIL
       await sendEmail(
         process.env.ADMIN_EMAIL,
         "New Contact Form Submission",
         `
-          <h3>New Contact</h3>
+          <h2>📩 New Contact Enquiry</h2>
           <p><b>Name:</b> ${name}</p>
           <p><b>Email:</b> ${email}</p>
           <p><b>Company:</b> ${company || "N/A"}</p>
           <p><b>Subject:</b> ${subject}</p>
-          <p><b>Message:</b> ${message}</p>
+          <p><b>Message:</b></p>
+          <p>${message}</p>
         `
       );
 
-      // 3️⃣ User confirmation mail
+      // 📧 USER CONFIRMATION EMAIL
       await sendEmail(
         email,
-        "We received your message",
+        "We received your message – ElanceForge",
         `
-          <p>Hi ${name},</p>
-          <p>Thank you for contacting us. Your message has been received.</p>
-          <p>We will get back to you shortly.</p>
+          <p>Hi <b>${name}</b>,</p>
+
+          <p>Thank you for contacting <b>ElanceForge</b>.</p>
+          <p>We have received your message and our team will get back to you shortly.</p>
+
           <br />
-          <p>Regards,<br />ElanceForge Team</p>
+          <p>Best regards,</p>
+          <p><b>ElanceForge Team</b></p>
         `
       );
 
-      // 4️⃣ Optional (non-critical)
+      // 📊 Optional Excel Save (Non-blocking)
       saveToExcel(contact).catch(() => {});
 
-      // 5️⃣ FINAL response (AFTER mail)
+      // ✅ Final Response
       res.status(201).json({
         success: true,
         message: "Form submitted successfully",
