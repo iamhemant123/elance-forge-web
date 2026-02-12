@@ -1,20 +1,36 @@
-const nodemailer = require("nodemailer");
+import nodemailer from "nodemailer";
 
 const sendEmail = async (to, subject, html) => {
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-  });
+  try {
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+      throw new Error("Email credentials missing in environment variables");
+    }
 
-  await transporter.sendMail({
-    from: `"Elance Forge" <${process.env.EMAIL_USER}>`,
-    to,
-    subject,
-    html,
-  });
+    const transporter = nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false, // TLS
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS, // Gmail App Password
+      },
+    });
+
+    // 🔍 Verify SMTP (IMPORTANT for Render)
+    await transporter.verify();
+
+    const info = await transporter.sendMail({
+      from: `"ElanceForge" <${process.env.EMAIL_USER}>`,
+      to,
+      subject,
+      html,
+    });
+
+    console.log("✅ Email sent:", info.messageId);
+  } catch (error) {
+    console.error("❌ Email send failed:", error.message);
+    throw error; // VERY IMPORTANT
+  }
 };
 
-module.exports = sendEmail;
+export default sendEmail;

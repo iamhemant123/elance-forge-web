@@ -1,13 +1,14 @@
-const express = require("express");
-const Contact = require("../models/Contact");
-const sendEmail = require("../utils/sendEmail");
-const saveToExcel = require("../utils/saveToExcel");
-const { body, validationResult } = require("express-validator");
+import express from "express";
+import { body, validationResult } from "express-validator";
+import Contact from "../models/Contact.js";
+import sendEmail from "../utils/sendEmail.js";
+import saveToExcel from "../utils/saveToExcel.js";
 
 const router = express.Router();
 
 router.post(
-  "/",[
+  "/",
+  [
     body("name").trim().isLength({ min: 2 }),
     body("email").isEmail().normalizeEmail(),
     body("company").optional().trim().isLength({ max: 100 }),
@@ -16,18 +17,18 @@ router.post(
   ],
   async (req, res) => {
     try {
-      /* validation check */
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         return res.status(400).json({
-          message: "Invalid input",
+          success: false,
+          message: "Invalid form data",
         });
       }
 
       const { name, email, company, subject, message } = req.body;
 
-      // database save (await for error catch)
-      const savedData = await Contact.create({
+      // 1️⃣ Save to DB
+      const contact = await Contact.create({
         name,
         email,
         company,
@@ -35,49 +36,50 @@ router.post(
         message,
       });
 
-      // immediate response to client
+      // 2️⃣ Admin mail (AWAIT is MUST)
+      await sendEmail(
+        process.env.ADMIN_EMAIL,
+        "New Contact Form Submission",
+        `
+          <h3>New Contact</h3>
+          <p><b>Name:</b> ${name}</p>
+          <p><b>Email:</b> ${email}</p>
+          <p><b>Company:</b> ${company || "N/A"}</p>
+          <p><b>Subject:</b> ${subject}</p>
+          <p><b>Message:</b> ${message}</p>
+        `
+      );
+
+      // 3️⃣ User confirmation mail
+      await sendEmail(
+        email,
+        "We received your message",
+        `
+          <p>Hi ${name},</p>
+          <p>Thank you for contacting us. Your message has been received.</p>
+          <p>We will get back to you shortly.</p>
+          <br />
+          <p>Regards,<br />ElanceForge Team</p>
+        `
+      );
+
+      // 4️⃣ Optional (non-critical)
+      saveToExcel(contact).catch(() => {});
+
+      // 5️⃣ FINAL response (AFTER mail)
       res.status(201).json({
         success: true,
         message: "Form submitted successfully",
       });
+    } catch (error) {
+      console.error("Contact route error:", error);
 
-      // background tasks 
-      try {
-        saveToExcel(savedData);
-
-        await sendEmail(
-          process.env.ADMIN_EMAIL,
-          "New Contact Form Entry",
-          `
-          <h3>New Contact</h3>
-          <p>Name: ${name}</p>
-          <p>Email: ${email}</p>
-          <p>Company: ${company || "N/A"}</p>
-          <p>Subject: ${subject}</p>
-          <p>Message: ${message}</p>
-        `
-        );
-
-        await sendEmail(
-          email,
-          "We received your message",
-          `
-          <p>Hi ${name},</p>
-          <p>Thank you for reaching out. We have received your message.</p>
-          <p>Our team will get back to you shortly.</p>
-          <br />
-          <p>Best regards,<br />ElanceForge Team</p>
-        `
-        );
-      } catch (bgErr) {
-        console.error("Background task error:", bgErr.message);
-      }
-
-    } catch (err) {
-      console.error("Contact error:", err.message);
-      return res.status(500).json({ message: "Server error" });
+      res.status(500).json({
+        success: false,
+        message: "Server error",
+      });
     }
   }
 );
 
-module.exports = router;
+export default router;
