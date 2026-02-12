@@ -10,13 +10,14 @@ const sendEmail = async (to, subject, html) => {
       host: "smtp.gmail.com",
       port: 587,
       secure: false, // TLS
+      family:4,
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS, // Gmail App Password
       },
     });
 
-    // 🔍 Verify SMTP (IMPORTANT for Render)
+    // Verify SMTP (IMPORTANT for Render)
     await transporter.verify();
 
     const info = await transporter.sendMail({
@@ -26,9 +27,9 @@ const sendEmail = async (to, subject, html) => {
       html,
     });
 
-    console.log("✅ Email sent:", info.messageId);
+    console.log(" Email sent:", info.messageId);
   } catch (error) {
-    console.error("❌ Email send failed:", error.message);
+    console.error(" Email send failed:", error.message);
     throw error; // VERY IMPORTANT
   }
 };
