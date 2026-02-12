@@ -1,36 +1,33 @@
-import nodemailer from "nodemailer";
+// utils/sendEmail.js
+import { Resend } from "resend";
+
+// Create Resend client once
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const sendEmail = async (to, subject, html) => {
   try {
-    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-      throw new Error("Email credentials missing in environment variables");
+    // 🔐 Safety check
+    if (!process.env.RESEND_API_KEY) {
+      throw new Error("RESEND_API_KEY missing in environment variables");
     }
 
-    const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 587,
-      secure: false, // TLS
-      family:4,
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS, // Gmail App Password
-      },
-    });
-
-    // Verify SMTP (IMPORTANT for Render)
-    await transporter.verify();
-
-    const info = await transporter.sendMail({
-      from: `"ElanceForge" <${process.env.EMAIL_USER}>`,
-      to,
+    // 📤 Send email using Resend API (HTTPS)
+    const { error } = await resend.emails.send({
+      from: "ElanceForge <onboarding@resend.dev>", // SAFE default sender
+      to: Array.isArray(to) ? to : [to],
       subject,
       html,
     });
 
-    console.log(" Email sent:", info.messageId);
+    if (error) {
+      console.error("❌ Resend error:", error);
+      throw new Error("Email sending failed via Resend");
+    }
+
+    console.log("✅ Email sent successfully via Resend");
   } catch (error) {
-    console.error(" Email send failed:", error.message);
-    throw error; // VERY IMPORTANT
+    console.error("❌ Email send failed:", error.message);
+    throw error; // IMPORTANT → route ko pata chale
   }
 };
 
