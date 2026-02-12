@@ -1,3 +1,6 @@
+import dns from "dns";
+// FORCE IPv4 (VERY IMPORTANT)
+dns.setDefaultResultOrder("ipv4first");
 import dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
