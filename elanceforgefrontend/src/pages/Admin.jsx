@@ -1,5 +1,6 @@
 import React,{useEffect,useState} from "react";
 
+
 import {
   LayoutDashboard,
   Users,
@@ -38,7 +39,7 @@ const Admin=()=>{
       try{
 
         const response=await fetch(
-          "http://localhost:5000/api/admin/contacts"
+          `${import.meta.env.VITE_API_URL}/api/admin/contacts`,
         );
 
         const data=await response.json();
