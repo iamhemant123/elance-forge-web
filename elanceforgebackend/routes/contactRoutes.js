@@ -5,165 +5,196 @@ import Contact from "../models/Contact.js";
 
 import sendEmail from "../utils/sendEmail.js";
 import saveToExcel from "../utils/saveToExcel.js";
-import sendWhatsAppMessage from "../utils/sendWhatsAppMessage.js";
 
 const router = express.Router();
 
 router.post(
-  "/contact",
+"/contact",
 
-  [
-    body("name")
-      .trim()
-      .isLength({ min: 2 })
-      .withMessage("Name is too short"),
+[
+body("name")
+.trim()
+.isLength({ min: 2 })
+.withMessage("Name is too short"),
 
-    body("email")
-      .isEmail()
-      .normalizeEmail()
-      .withMessage("Invalid email address"),
+body("email")
+.isEmail()
+.normalizeEmail()
+.withMessage("Invalid email address"),
 
-    body("company")
-      .optional()
-      .trim()
-      .isLength({ max: 100 }),
+body("company")
+.optional()
+.trim()
+.isLength({ max: 100 }),
 
-    body("subject")
-      .trim()
-      .isLength({ min: 3, max: 100 })
-      .withMessage("Invalid subject"),
+body("subject")
+.trim()
+.isLength({ min: 3, max: 100 })
+.withMessage("Invalid subject"),
 
-    body("message")
-      .trim()
-      .isLength({ min: 10, max: 1000 })
-      .withMessage("Message is too short"),
-  ],
+body("message")
+.trim()
+.isLength({ min: 10, max: 1000 })
+.withMessage("Message is too short"),
+],
 
-  async (req, res) => {
-    try {
-      // Validate Request
-      const errors = validationResult(req);
+async (req,res)=>{
 
-      if (!errors.isEmpty()) {
-        return res.status(400).json({
-          success: false,
-          message: "Invalid form data",
-          errors: errors.array(),
-        });
-      }
+try{
 
-      const {
-        name,
-        email,
-        company,
-        subject,
-        message,
-      } = req.body;
+const errors=validationResult(req);
 
-      // Save Lead
-      const newLead = await Contact.create({
-        name,
-        email,
-        company,
-        subject,
-        message,
-        ipAddress:
-          req.headers["x-forwarded-for"] ||
-          req.socket.remoteAddress ||
-          "",
-      });
+if(!errors.isEmpty()){
 
-      // Admin Email
-      await sendEmail(
-        process.env.ADMIN_EMAIL,
-        `New Client Inquiry - ${subject}`,
+return res.status(400).json({
+success:false,
+message:"Invalid form data",
+errors:errors.array(),
+});
 
-        `
-          <div style="font-family: Arial, sans-serif; padding: 20px;">
-            <h2>New Contact Inquiry</h2>
+}
 
-            <p><strong>Name :</strong> ${name}</p>
+const {
+name,
+email,
+company,
+subject,
+message,
+}=req.body;
 
-            <p><strong>Email :</strong> ${email}</p>
+const newLead=await Contact.create({
+name,
+email,
+company,
+subject,
+message,
+ipAddress:
+req.headers["x-forwarded-for"] ||
+req.socket.remoteAddress ||
+"",
+});
 
-            <p><strong>Company :</strong> ${
-              company || "Not Provided"
-            }</p>
 
-            <p><strong>Subject :</strong> ${subject}</p>
+// INSTANT RESPONSE TO FRONTEND
 
-            <p><strong>Message :</strong></p>
+res.status(201).json({
+success:true,
+message:"Message submitted successfully",
+});
 
-            <p>${message}</p>
-          </div>
-        `
-      );
 
-      // Client Confirmation Email
-      await sendEmail(
-        email,
-        "We Received Your Message - ElanceForge",
+// BACKGROUND TASKS
 
-        `
-          <div style="font-family: Arial, sans-serif; padding: 20px;">
-            <h2>Hello ${name},</h2>
+setImmediate(async()=>{
 
-            <p>
-              Thank you for contacting <strong>ElanceForge</strong>.
-            </p>
+try{
 
-            <p>
-              We have successfully received your message.
-              Our team will contact you shortly.
-            </p>
+// ADMIN EMAIL
 
-            <br />
+await sendEmail(
+process.env.ADMIN_EMAIL,
+`New Client Inquiry - ${subject}`,
 
-            <p>
-              Regards,
-              <br />
-              <strong>ElanceForge Team</strong>
-            </p>
-          </div>
-        `
-      );
+`
+<div style="font-family: Arial, sans-serif; padding: 20px;">
 
-      // WhatsApp Notification
-      await sendWhatsAppMessage(
-        `
-New Lead Received
+<h2>New Contact Inquiry</h2>
 
-Name : ${name}
+<p>
+<strong>Name :</strong> ${name}
+</p>
 
-Email : ${email}
+<p>
+<strong>Email :</strong> ${email}
+</p>
 
-Company : ${company || "N/A"}
+<p>
+<strong>Company :</strong> ${
+company || "Not Provided"
+}
+</p>
 
-Subject : ${subject}
-        `
-      );
+<p>
+<strong>Subject :</strong> ${subject}
+</p>
 
-      // Save To Excel (Optional)
-      saveToExcel(newLead).catch(() => {});
+<p>
+<strong>Message :</strong>
+</p>
 
-      // Success Response
-      return res.status(201).json({
-        success: true,
-        message: "Message submitted successfully",
-      });
+<p>${message}</p>
 
-    } catch (error) {
-      console.error(
-        "Contact Form Error :",
-        error.message
-      );
+</div>
+`
+);
 
-      return res.status(500).json({
-        success: false,
-        message: "Something went wrong",
-      });
-    }
-  }
+
+// CLIENT EMAIL
+
+await sendEmail(
+email,
+"We Received Your Message - ElanceForge",
+
+`
+<div style="font-family: Arial, sans-serif; padding: 20px;">
+
+<h2>Hello ${name},</h2>
+
+<p>
+Thank you for contacting
+<strong>ElanceForge</strong>.
+</p>
+
+<p>
+We have successfully received your message.
+Our team will contact you shortly.
+</p>
+
+<br />
+
+<p>
+Regards,
+<br />
+<strong>ElanceForge Team</strong>
+</p>
+
+</div>
+`
+);
+
+
+// SAVE TO EXCEL
+
+await saveToExcel(newLead);
+
+console.log("Background Tasks Completed");
+
+}catch(error){
+
+console.log(
+"Background Task Error :",
+error.message
+);
+
+}
+
+});
+
+}catch(error){
+
+console.error(
+"Contact Form Error :",
+error.message
+);
+
+return res.status(500).json({
+success:false,
+message:"Something went wrong",
+});
+
+}
+
+}
 );
 
 export default router;

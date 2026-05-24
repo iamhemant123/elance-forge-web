@@ -1,65 +1,61 @@
 import mongoose from "mongoose";
 
-const contactSchema = new mongoose.Schema(
-  {
-    name: {
-      type: String,
-      required: true,
-      trim: true,
-      minlength: 2,
-    },
+const contactSchema=new mongoose.Schema({
 
-    email: {
-      type: String,
-      required: true,
-      trim: true,
-      lowercase: true,
-      index: true,
-      match: [
-        /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
-        "Invalid email address",
-      ],
-    },
+name:{
+type:String,
+required:true,
+trim:true,
+minlength:2,
+},
 
-    company: {
-      type: String,
-      trim: true,
-      default: "",
-    },
+email:{
+type:String,
+required:true,
+trim:true,
+lowercase:true,
+index:true,
+match:[
+/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
+"Invalid email address",
+],
+},
 
-    subject: {
-      type: String,
-      required: true,
-      trim: true,
-      maxlength: 150,
-    },
+company:{
+type:String,
+trim:true,
+default:"",
+},
 
-    message: {
-      type: String,
-      required: true,
-      trim: true,
-      minlength: 5,
-    },
+subject:{
+type:String,
+required:true,
+trim:true,
+maxlength:150,
+},
 
-    status: {
-      type: String,
-      default: "new",
-      enum: ["new", "contacted", "closed"],
-    },
+message:{
+type:String,
+required:true,
+trim:true,
+minlength:5,
+},
 
-    ipAddress: {
-      type: String,
-      default: "",
-    },
-  },
-  {
-    timestamps: true,
-  }
-);
+status:{
+type:String,
+default:"New",
+enum:["New","Contacted","Working","Completed"],
+},
 
-// Prevent Model Overwrite Error
-const Contact =
-  mongoose.models.Contact ||
-  mongoose.model("Contact", contactSchema);
+ipAddress:{
+type:String,
+default:"",
+},
+
+},{
+timestamps:true,
+});
+
+const Contact=mongoose.models.Contact || mongoose.model("Contact",contactSchema);
 
 export default Contact;

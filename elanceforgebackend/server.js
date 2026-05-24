@@ -17,6 +17,8 @@ import connectDB from "./config/db.js";
 import contactRoutes from "./routes/contactRoutes.js";
 import chatRoutes from "./routes/chatRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
+import projectRoutes from "./routes/projectRoutes.js";
+import milestoneRoutes from "./routes/milestoneRoutes.js";
 
 // App
 const app = express();
@@ -53,6 +55,9 @@ app.use(
 app.use("/api", contactRoutes);
 app.use("/api", chatRoutes);
 app.use("/api/admin",adminRoutes);
+app.use("/api/projects",projectRoutes);
+app.use("/api/milestones", milestoneRoutes);
+
 
 // Home route
 app.get("/", (req, res) => {
