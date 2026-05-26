@@ -213,10 +213,10 @@ const ProjectManagement = () => {
           prev.map((project) =>
             project._id === id
               ? {
-                  ...project,
-                  status,
-                  progress,
-                }
+                ...project,
+                status,
+                progress,
+              }
               : project
           )
         );
@@ -420,18 +420,17 @@ const ProjectManagement = () => {
                   </p>
 
                   <p
-                    className={`font-bold text-sm sm:text-base ${
-                      project.status ===
-                      "Completed"
+                    className={`font-bold text-sm sm:text-base ${project.status ===
+                        "Completed"
                         ? "text-green-500"
                         : project.status ===
                           "Review"
-                        ? "text-yellow-500"
-                        : project.status ===
-                          "In Progress"
-                        ? "text-blue-500"
-                        : "text-orange-500"
-                    }`}
+                          ? "text-yellow-500"
+                          : project.status ===
+                            "In Progress"
+                            ? "text-blue-500"
+                            : "text-orange-500"
+                      }`}
                   >
                     {project.progress}%
                   </p>

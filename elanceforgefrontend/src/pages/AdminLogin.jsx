@@ -1,27 +1,27 @@
-import React,{useState} from "react";
-import {useNavigate} from "react-router-dom";
-import {LockKeyhole,Eye,EyeOff} from "lucide-react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { LockKeyhole, Eye, EyeOff } from "lucide-react";
 
-const AdminLogin=()=>{
+const AdminLogin = () => {
 
-  const [password,setPassword]=useState("");
-  const [showPassword,setShowPassword]=useState(false);
-  const [error,setError]=useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
 
-  const navigate=useNavigate();
+  const navigate = useNavigate();
 
-  const handleLogin=(e)=>{
+  const handleLogin = (e) => {
     e.preventDefault();
 
-    if(password==="elance123"){
-      localStorage.setItem("adminAuth","true");
+    if (password === "elance123") {
+      localStorage.setItem("adminAuth", "true");
       navigate("/admin");
-    }else{
+    } else {
       setError("Wrong Password");
     }
   };
 
-  return(
+  return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-white px-4">
 
       <form
@@ -31,7 +31,7 @@ const AdminLogin=()=>{
 
         <div className="flex justify-center mb-5">
           <div className="w-20 h-20 rounded-full bg-orange-100 flex items-center justify-center text-orange-600">
-            <LockKeyhole size={36}/>
+            <LockKeyhole size={36} />
           </div>
         </div>
 
@@ -49,16 +49,16 @@ const AdminLogin=()=>{
             type={showPassword ? "text" : "password"}
             placeholder="Enter Admin Password"
             value={password}
-            onChange={(e)=>setPassword(e.target.value)}
+            onChange={(e) => setPassword(e.target.value)}
             className="w-full border border-gray-300 rounded-2xl px-4 py-4 pr-14 outline-none focus:border-orange-500"
           />
 
           <button
             type="button"
-            onClick={()=>setShowPassword(!showPassword)}
+            onClick={() => setShowPassword(!showPassword)}
             className="absolute top-1/2 right-4 -translate-y-1/2 text-gray-500 hover:text-orange-600 transition"
           >
-            {showPassword ? <EyeOff size={22}/> : <Eye size={22}/>}
+            {showPassword ? <EyeOff size={22} /> : <Eye size={22} />}
           </button>
 
         </div>

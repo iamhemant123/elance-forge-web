@@ -84,11 +84,11 @@ const DashboardContent = () => {
   const averageProgress =
     projects.length > 0
       ? Math.round(
-          projects.reduce(
-            (acc, p) => acc + p.progress,
-            0
-          ) / projects.length
-        )
+        projects.reduce(
+          (acc, p) => acc + p.progress,
+          0
+        ) / projects.length
+      )
       : 0;
 
   return (
@@ -245,16 +245,15 @@ const DashboardContent = () => {
                   </div>
 
                   <div
-                    className={`px-4 py-2 rounded-xl text-sm font-semibold w-fit ${
-                      project.status === "Completed"
+                    className={`px-4 py-2 rounded-xl text-sm font-semibold w-fit ${project.status === "Completed"
                         ? "bg-green-100 text-green-500"
                         : project.status === "Review"
-                        ? "bg-yellow-100 text-yellow-500"
-                        : project.status ===
-                          "In Progress"
-                        ? "bg-blue-100 text-blue-500"
-                        : "bg-orange-100 text-orange-500"
-                    }`}
+                          ? "bg-yellow-100 text-yellow-500"
+                          : project.status ===
+                            "In Progress"
+                            ? "bg-blue-100 text-blue-500"
+                            : "bg-orange-100 text-orange-500"
+                      }`}
                   >
                     {project.status}
                   </div>
@@ -276,18 +275,17 @@ const DashboardContent = () => {
                       style={{
                         width: `${project.progress}%`,
                       }}
-                      className={`h-3 rounded-full ${
-                        project.status ===
-                        "Completed"
+                      className={`h-3 rounded-full ${project.status ===
+                          "Completed"
                           ? "bg-green-500"
                           : project.status ===
                             "Review"
-                          ? "bg-yellow-500"
-                          : project.status ===
-                            "In Progress"
-                          ? "bg-blue-500"
-                          : "bg-orange-500"
-                      }`}
+                            ? "bg-yellow-500"
+                            : project.status ===
+                              "In Progress"
+                              ? "bg-blue-500"
+                              : "bg-orange-500"
+                        }`}
                     ></div>
                   </div>
                 </div>
@@ -329,13 +327,12 @@ const DashboardContent = () => {
                 <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
                   <div
                     style={{
-                      width: `${
-                        projects.length > 0
+                      width: `${projects.length > 0
                           ? (completedProjects /
-                              projects.length) *
-                            100
+                            projects.length) *
+                          100
                           : 0
-                      }%`,
+                        }%`,
                     }}
                     className="h-3 bg-green-500 rounded-full"
                   ></div>
@@ -357,13 +354,12 @@ const DashboardContent = () => {
                 <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
                   <div
                     style={{
-                      width: `${
-                        milestones.length > 0
+                      width: `${milestones.length > 0
                           ? (completedMilestones /
-                              milestones.length) *
-                            100
+                            milestones.length) *
+                          100
                           : 0
-                      }%`,
+                        }%`,
                     }}
                     className="h-3 bg-blue-500 rounded-full"
                   ></div>

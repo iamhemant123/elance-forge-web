@@ -173,18 +173,16 @@ const ChatBot = () => {
             {messages.map((msg, index) => (
               <div
                 key={index}
-                className={`flex ${
-                  msg.role === "user"
+                className={`flex ${msg.role === "user"
                     ? "justify-end"
                     : "justify-start"
-                }`}
+                  }`}
               >
                 <div
-                  className={`max-w-[85%] px-4 py-3 rounded-2xl text-sm leading-relaxed shadow-sm ${
-                    msg.role === "user"
+                  className={`max-w-[85%] px-4 py-3 rounded-2xl text-sm leading-relaxed shadow-sm ${msg.role === "user"
                       ? "bg-orange-600 text-white rounded-br-sm"
                       : "bg-white text-gray-800 rounded-bl-sm border border-orange-100"
-                  }`}
+                    }`}
                 >
                   <div className="flex items-start gap-2">
                     {msg.role === "assistant" ? (

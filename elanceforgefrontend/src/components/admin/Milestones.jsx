@@ -204,10 +204,10 @@ const Milestones = () => {
           prev.map((milestone) =>
             milestone._id === id
               ? {
-                  ...milestone,
-                  status,
-                  progress,
-                }
+                ...milestone,
+                status,
+                progress,
+              }
               : milestone
           )
         );
@@ -358,18 +358,17 @@ const Milestones = () => {
                   </p>
 
                   <p
-                    className={`font-bold text-sm sm:text-base ${
-                      milestone.status ===
-                      "Completed"
+                    className={`font-bold text-sm sm:text-base ${milestone.status ===
+                        "Completed"
                         ? "text-green-500"
                         : milestone.status ===
                           "Review"
-                        ? "text-yellow-500"
-                        : milestone.status ===
-                          "Working"
-                        ? "text-blue-500"
-                        : "text-orange-500"
-                    }`}
+                          ? "text-yellow-500"
+                          : milestone.status ===
+                            "Working"
+                            ? "text-blue-500"
+                            : "text-orange-500"
+                      }`}
                   >
                     {milestone.progress}%
                   </p>

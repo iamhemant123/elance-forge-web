@@ -107,8 +107,8 @@ const Service = () => {
             index: Number(entry.target.dataset.index),
             distance: Math.abs(
               entry.boundingClientRect.top +
-                entry.boundingClientRect.height / 2 -
-                window.innerHeight / 2
+              entry.boundingClientRect.height / 2 -
+              window.innerHeight / 2
             ),
           }));
 
@@ -185,18 +185,18 @@ const Service = () => {
                   isDesktop
                     ? { opacity: 1 }
                     : isActive
-                    ? activeAnimation
-                    : idleAnimation
+                      ? activeAnimation
+                      : idleAnimation
                 }
                 whileHover={
                   isDesktop
                     ? {
-                        ...activeAnimation,
-                        transition: {
-                          duration: 0.18,
-                          ease: "easeOut",
-                        },
-                      }
+                      ...activeAnimation,
+                      transition: {
+                        duration: 0.18,
+                        ease: "easeOut",
+                      },
+                    }
                     : undefined
                 }
                 transition={{ duration: 0.4, ease: "easeOut" }}
