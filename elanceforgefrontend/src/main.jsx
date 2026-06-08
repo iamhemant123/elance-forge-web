@@ -31,6 +31,10 @@ import Admin from "./pages/Admin.jsx";
 
 import AdminLogin from "./pages/AdminLogin.jsx";
 
+import ClientLogin from "./pages/ClientLogin.jsx";
+
+import ClientDashboard from "./pages/ClientDashboard.jsx";
+
 /* Root */
 
 const rootElement=
@@ -102,6 +106,20 @@ root.render(
               element={<AdminLogin />}
             />
 
+            {/* Client Login */}
+
+            <Route
+              path="/client-login"
+              element={<ClientLogin />}
+            />
+
+            {/* Client Dashboard */}
+
+            <Route
+              path="/client-dashboard"
+              element={<ClientDashboard />}
+            />
+
           </Routes>
 
         </AnimatePresence>
@@ -111,4 +129,5 @@ root.render(
     </HelmetProvider>
 
   </StrictMode>
+
 );

@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { Routes, Route } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
 import Homepage from "./components/Homepage";
@@ -10,22 +11,24 @@ import Footer from "./components/Footer";
 import Reminder from "./components/Reminder";
 import ChatBot from "./components/ChatBot";
 
-function App() {
+import ClientLogin from "./pages/ClientLogin";
+import ClientDashboard from "./pages/ClientDashboard";
+
+const HomePage = () => {
+
   useEffect(() => {
+
     if (typeof window === "undefined") return;
 
-    // Better Scroll Handling
     if ("scrollRestoration" in window.history) {
       window.history.scrollRestoration = "manual";
     }
 
-    // Always Start From Top
     window.scrollTo({
       top: 0,
       behavior: "instant",
     });
 
-    // Remove Hash On Refresh
     if (window.location.hash) {
       window.history.replaceState(
         null,
@@ -33,13 +36,16 @@ function App() {
         window.location.pathname
       );
     }
+
   }, []);
 
   return (
     <div className="bg-white text-gray-900 overflow-hidden">
+
       <Navbar />
 
       <main>
+
         <section id="home">
           <Homepage />
         </section>
@@ -59,11 +65,42 @@ function App() {
         <Faq />
 
         <Reminder />
+
       </main>
+
       <ChatBot />
+
       <Footer />
+
     </div>
   );
+};
+
+function App() {
+
+  return (
+
+    <Routes>
+
+      <Route
+        path="/"
+        element={<HomePage />}
+      />
+
+      <Route
+        path="/client-login"
+        element={<ClientLogin />}
+      />
+
+      <Route
+        path="/client-dashboard"
+        element={<ClientDashboard />}
+      />
+
+    </Routes>
+
+  );
+
 }
 
 export default App;

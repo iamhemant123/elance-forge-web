@@ -9,93 +9,93 @@ import saveToExcel from "../utils/saveToExcel.js";
 const router = express.Router();
 
 router.post(
-"/contact",
+      "/contact",
 
-[
-body("name")
-.trim()
-.isLength({ min: 2 })
-.withMessage("Name is too short"),
+      [
+            body("name")
+                  .trim()
+                  .isLength({ min: 2 })
+                  .withMessage("Name is too short"),
 
-body("email")
-.isEmail()
-.normalizeEmail()
-.withMessage("Invalid email address"),
+            body("email")
+                  .isEmail()
+                  .normalizeEmail()
+                  .withMessage("Invalid email address"),
 
-body("company")
-.optional()
-.trim()
-.isLength({ max: 100 }),
+            body("company")
+                  .optional()
+                  .trim()
+                  .isLength({ max: 100 }),
 
-body("subject")
-.trim()
-.isLength({ min: 3, max: 100 })
-.withMessage("Invalid subject"),
+            body("subject")
+                  .trim()
+                  .isLength({ min: 3, max: 100 })
+                  .withMessage("Invalid subject"),
 
-body("message")
-.trim()
-.isLength({ min: 10, max: 1000 })
-.withMessage("Message is too short"),
-],
+            body("message")
+                  .trim()
+                  .isLength({ min: 10, max: 1000 })
+                  .withMessage("Message is too short"),
+      ],
 
-async (req,res)=>{
+      async (req, res) => {
 
-try{
+            try {
 
-const errors=validationResult(req);
+                  const errors = validationResult(req);
 
-if(!errors.isEmpty()){
+                  if (!errors.isEmpty()) {
 
-return res.status(400).json({
-success:false,
-message:"Invalid form data",
-errors:errors.array(),
-});
+                        return res.status(400).json({
+                              success: false,
+                              message: "Invalid form data",
+                              errors: errors.array(),
+                        });
 
-}
+                  }
 
-const {
-name,
-email,
-company,
-subject,
-message,
-}=req.body;
+                  const {
+                        name,
+                        email,
+                        company,
+                        subject,
+                        message,
+                  } = req.body;
 
-const newLead=await Contact.create({
-name,
-email,
-company,
-subject,
-message,
-ipAddress:
-req.headers["x-forwarded-for"] ||
-req.socket.remoteAddress ||
-"",
-});
-
-
-// INSTANT RESPONSE TO FRONTEND
-
-res.status(201).json({
-success:true,
-message:"Message submitted successfully",
-});
+                  const newLead = await Contact.create({
+                        name,
+                        email,
+                        company,
+                        subject,
+                        message,
+                        ipAddress:
+                              req.headers["x-forwarded-for"] ||
+                              req.socket.remoteAddress ||
+                              "",
+                  });
 
 
-// BACKGROUND TASKS
+                  // INSTANT RESPONSE TO FRONTEND
 
-setImmediate(async()=>{
+                  res.status(201).json({
+                        success: true,
+                        message: "Message submitted successfully",
+                  });
 
-try{
 
-// ADMIN EMAIL
+                  // BACKGROUND TASKS
 
-await sendEmail(
-process.env.ADMIN_EMAIL,
-`New Client Inquiry - ${subject}`,
+                  setImmediate(async () => {
 
-`
+                        try {
+
+                              // ADMIN EMAIL
+
+                              await sendEmail(
+                                    process.env.ADMIN_EMAIL,
+                                    `New Client Inquiry - ${subject}`,
+
+                                    `
 <div style="font-family: Arial, sans-serif; padding: 20px;">
 
 <h2>New Contact Inquiry</h2>
@@ -109,9 +109,8 @@ process.env.ADMIN_EMAIL,
 </p>
 
 <p>
-<strong>Company :</strong> ${
-company || "Not Provided"
-}
+<strong>Company :</strong> ${company || "Not Provided"
+                                    }
 </p>
 
 <p>
@@ -126,16 +125,16 @@ company || "Not Provided"
 
 </div>
 `
-);
+                              );
 
 
-// CLIENT EMAIL
+                              // CLIENT EMAIL
 
-await sendEmail(
-email,
-"We Received Your Message - ElanceForge",
+                              await sendEmail(
+                                    email,
+                                    "We Received Your Message - ElanceForge",
 
-`
+                                    `
 <div style="font-family: Arial, sans-serif; padding: 20px;">
 
 <h2>Hello ${name},</h2>
@@ -160,41 +159,41 @@ Regards,
 
 </div>
 `
-);
+                              );
 
 
-// SAVE TO EXCEL
+                              // SAVE TO EXCEL
 
-await saveToExcel(newLead);
+                              await saveToExcel(newLead);
 
-console.log("Background Tasks Completed");
+                              console.log("Background Tasks Completed");
 
-}catch(error){
+                        } catch (error) {
 
-console.log(
-"Background Task Error :",
-error.message
-);
+                              console.log(
+                                    "Background Task Error :",
+                                    error.message
+                              );
 
-}
+                        }
 
-});
+                  });
 
-}catch(error){
+            } catch (error) {
 
-console.error(
-"Contact Form Error :",
-error.message
-);
+                  console.error(
+                        "Contact Form Error :",
+                        error.message
+                  );
 
-return res.status(500).json({
-success:false,
-message:"Something went wrong",
-});
+                  return res.status(500).json({
+                        success: false,
+                        message: "Something went wrong",
+                  });
 
-}
+            }
 
-}
+      }
 );
 
 export default router;

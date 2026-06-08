@@ -1,61 +1,61 @@
 import mongoose from "mongoose";
 
-const contactSchema=new mongoose.Schema({
+const contactSchema = new mongoose.Schema({
 
-name:{
-type:String,
-required:true,
-trim:true,
-minlength:2,
-},
+      name: {
+            type: String,
+            required: true,
+            trim: true,
+            minlength: 2,
+      },
 
-email:{
-type:String,
-required:true,
-trim:true,
-lowercase:true,
-index:true,
-match:[
-/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
-"Invalid email address",
-],
-},
+      email: {
+            type: String,
+            required: true,
+            trim: true,
+            lowercase: true,
+            index: true,
+            match: [
+                  /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
+                  "Invalid email address",
+            ],
+      },
 
-company:{
-type:String,
-trim:true,
-default:"",
-},
+      company: {
+            type: String,
+            trim: true,
+            default: "",
+      },
 
-subject:{
-type:String,
-required:true,
-trim:true,
-maxlength:150,
-},
+      subject: {
+            type: String,
+            required: true,
+            trim: true,
+            maxlength: 150,
+      },
 
-message:{
-type:String,
-required:true,
-trim:true,
-minlength:5,
-},
+      message: {
+            type: String,
+            required: true,
+            trim: true,
+            minlength: 5,
+      },
 
-status:{
-type:String,
-default:"New",
-enum:["New","Contacted","Working","Completed"],
-},
+      status: {
+            type: String,
+            default: "New",
+            enum: ["New", "Contacted", "Working", "Completed"],
+      },
 
-ipAddress:{
-type:String,
-default:"",
-},
+      ipAddress: {
+            type: String,
+            default: "",
+      },
 
-},{
-timestamps:true,
+}, {
+      timestamps: true,
 });
 
-const Contact=mongoose.models.Contact || mongoose.model("Contact",contactSchema);
+const Contact = mongoose.models.Contact || mongoose.model("Contact", contactSchema);
 
 export default Contact;

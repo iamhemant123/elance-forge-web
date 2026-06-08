@@ -1,91 +1,165 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { LockKeyhole, Eye, EyeOff } from "lucide-react";
+
+import {
+  LockKeyhole,
+  Eye,
+  EyeOff,
+} from "lucide-react";
 
 const AdminLogin = () => {
 
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
+  // Password field
+  const [password, setPassword] =
+    useState("");
 
-  const navigate = useNavigate();
+  // Password visibility
+  const [showPassword, setShowPassword] =
+    useState(false);
 
+  // Error message
+  const [error, setError] =
+    useState("");
+
+  const navigate =
+    useNavigate();
+
+  // Login handler
   const handleLogin = (e) => {
+
     e.preventDefault();
 
-    if (password === "elance123") {
-      localStorage.setItem("adminAuth", "true");
+    if (
+      password === "elance123"
+    ) {
+
+      localStorage.setItem(
+        "adminAuth",
+        "true"
+      );
+
       navigate("/admin");
+
     } else {
-      setError("Wrong Password");
+
+      setError(
+        "Wrong Password"
+      );
+
     }
+
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-white px-4">
+
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 via-white to-slate-50 px-4">
 
       <form
         onSubmit={handleLogin}
-        className="bg-white w-full max-w-md rounded-3xl shadow-2xl p-8 border border-orange-100"
+        className="w-full max-w-md bg-white border border-slate-200 rounded-3xl shadow-xl p-6 md:p-8"
       >
 
+        {/* Login icon */}
         <div className="flex justify-center mb-5">
-          <div className="w-20 h-20 rounded-full bg-orange-100 flex items-center justify-center text-orange-600">
-            <LockKeyhole size={36} />
+
+          <div className="w-16 h-16 rounded-full bg-orange-100 flex items-center justify-center text-orange-600">
+
+            <LockKeyhole size={30} />
+
           </div>
+
         </div>
 
-        <h1 className="text-3xl font-black text-center text-gray-900 mb-2">
+        {/* Heading */}
+        <h1 className="text-2xl md:text-3xl font-bold text-center text-slate-800">
+
           Admin Login
+
         </h1>
 
-        <p className="text-center text-gray-500 mb-6">
+        <p className="text-center text-sm text-slate-500 mt-2 mb-6">
+
           Enter password to access dashboard
+
         </p>
 
+        {/* Password input */}
         <div className="relative">
 
           <input
-            type={showPassword ? "text" : "password"}
+            type={
+              showPassword
+                ? "text"
+                : "password"
+            }
             placeholder="Enter Admin Password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full border border-gray-300 rounded-2xl px-4 py-4 pr-14 outline-none focus:border-orange-500"
+            onChange={(e) =>
+              setPassword(
+                e.target.value
+              )
+            }
+            className="w-full h-12 border border-slate-300 rounded-xl px-4 pr-12 outline-none focus:border-orange-500 text-sm"
           />
 
           <button
             type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            className="absolute top-1/2 right-4 -translate-y-1/2 text-gray-500 hover:text-orange-600 transition"
+            onClick={() =>
+              setShowPassword(
+                !showPassword
+              )
+            }
+            className="absolute top-1/2 right-3 -translate-y-1/2 text-slate-500 hover:text-orange-500 transition"
           >
-            {showPassword ? <EyeOff size={22} /> : <Eye size={22} />}
+
+            {showPassword ? (
+              <EyeOff size={20} />
+            ) : (
+              <Eye size={20} />
+            )}
+
           </button>
 
         </div>
 
-        <p className="text-sm text-center text-gray-500 mt-4">
+        {/* Demo password */}
+        <p className="text-xs text-center text-slate-500 mt-4">
+
           Demo Password :
-          <span className="font-bold text-orange-600 ml-1">
+
+          <span className="font-semibold text-orange-600 ml-1">
             elance123
           </span>
+
         </p>
 
+        {/* Error message */}
         {error && (
-          <p className="text-red-500 text-sm mt-4 text-center font-medium">
+
+          <div className="mt-4 bg-red-50 border border-red-100 text-red-600 rounded-xl px-4 py-3 text-sm text-center">
+
             {error}
-          </p>
+
+          </div>
+
         )}
 
+        {/* Login button */}
         <button
           type="submit"
-          className="w-full mt-6 bg-orange-600 hover:bg-orange-700 text-white py-4 rounded-2xl font-semibold transition-all duration-300 shadow-lg hover:scale-[1.02]"
+          className="w-full mt-5 bg-orange-500 hover:bg-orange-600 text-white h-12 rounded-xl text-sm font-medium transition"
         >
+
           Login To Dashboard
+
         </button>
 
       </form>
+
     </div>
+
   );
+
 };
 
 export default AdminLogin;

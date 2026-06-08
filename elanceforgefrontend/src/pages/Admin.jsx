@@ -1,5 +1,4 @@
 import { useState } from "react";
-
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -8,6 +7,8 @@ import {
   FolderKanban,
   CheckCircle2,
   Activity,
+  CreditCard,
+  FileText,
   LogOut,
   Menu,
   X,
@@ -18,127 +19,208 @@ import ClientManagement from "../components/admin/ClientManagement";
 import ProjectManagement from "../components/admin/ProjectManagement";
 import Milestones from "../components/admin/Milestones";
 import Analytics from "../components/admin/Analytics";
+import PaymentManagement from "../components/admin/PaymentManagement";
+import ClientDocuments from "../components/admin/ClientDocuments";
 
 const Admin = () => {
 
-  const navigate = useNavigate();
+  const navigate =
+    useNavigate();
 
-  const [page, setPage] = useState("dashboard");
+  // Active page
+  const [page, setPage] =
+    useState("dashboard");
 
-  const [open, setOpen] = useState(false);
+  // Mobile sidebar
+  const [open, setOpen] =
+    useState(false);
 
+  // All pages
   const pages = {
-    dashboard: <DashboardContent />,
-    clients: <ClientManagement />,
-    projects: <ProjectManagement />,
-    milestones: <Milestones />,
-    analytics: <Analytics />,
+    dashboard:
+      <DashboardContent />,
+    clients:
+      <ClientManagement />,
+    projects:
+      <ProjectManagement />,
+    milestones:
+      <Milestones />,
+    payments:
+      <PaymentManagement />,
+    documents:
+      <ClientDocuments />,
+    analytics:
+      <Analytics />,
   };
 
+  // Sidebar menu
   const menu = [
-    ["dashboard", "Dashboard", <LayoutDashboard size={20} />],
-    ["clients", "Clients", <Users size={20} />],
-    ["projects", "Projects", <FolderKanban size={20} />],
-    ["milestones", "Milestones", <CheckCircle2 size={20} />],
-    ["analytics", "Analytics", <Activity size={20} />],
+    [
+      "dashboard",
+      "Dashboard",
+      <LayoutDashboard size={18} />,
+    ],
+    [
+      "clients",
+      "Clients",
+      <Users size={18} />,
+    ],
+    [
+      "projects",
+      "Projects",
+      <FolderKanban size={18} />,
+    ],
+    [
+      "milestones",
+      "Milestones",
+      <CheckCircle2 size={18} />,
+    ],
+    [
+      "payments",
+      "Payments",
+      <CreditCard size={18} />,
+    ],
+    [
+      "documents",
+      "Client Documents",
+      <FileText size={18} />,
+    ],
+    [
+      "analytics",
+      "Analytics",
+      <Activity size={18} />,
+    ],
   ];
 
+  // Admin logout
   const logout = () => {
 
-    localStorage.removeItem("adminAuth");
+    localStorage.removeItem(
+      "adminAuth"
+    );
 
-    navigate("/admin-login");
+    navigate(
+      "/admin-login"
+    );
 
   };
 
   return (
 
-    <div className="flex h-screen bg-[#f5f7fb] overflow-hidden">
+    <div className="flex h-screen bg-slate-50 overflow-hidden">
 
-      {/* MOBILE TOPBAR */}
+      {/* Mobile topbar */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-slate-900 flex items-center justify-between px-4 z-50 border-b border-white/10">
 
-      <div className="lg:hidden fixed top-0 left-0 w-full bg-[#0f172a] text-white flex justify-between items-center px-5 py-4 z-50 shadow-md">
-
-        <h1 className="text-2xl font-black text-orange-500">
+        <h1 className="text-xl font-bold text-orange-500">
           ElanceForge
         </h1>
 
-        <button onClick={() => setOpen(!open)}>
+        <button
+          onClick={() =>
+            setOpen(!open)
+          }
+          className="text-white"
+        >
 
-          {open ? <X size={28} /> : <Menu size={28} />}
+          {open ? (
+            <X size={24} />
+          ) : (
+            <Menu size={24} />
+          )}
 
         </button>
 
       </div>
 
-      {/* SIDEBAR */}
+      {/* Mobile overlay */}
+      {open && (
 
-      <div
+        <div
+          onClick={() =>
+            setOpen(false)
+          }
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+        />
+
+      )}
+
+      {/* Sidebar */}
+      <aside
         className={`
-fixed lg:relative top-0 left-0
-h-screen w-72
-bg-[#0f172a] text-white
-z-50
-transition-transform duration-300
-flex flex-col
-overflow-hidden
-${open ? "translate-x-0" : "-translate-x-full"}
-lg:translate-x-0
-`}
+          fixed lg:relative
+          top-0 left-0
+          h-screen
+          w-64
+          bg-slate-900
+          text-white
+          z-50
+          flex flex-col
+          transition-transform duration-300
+          ${
+            open
+              ? "translate-x-0"
+              : "-translate-x-full"
+          }
+          lg:translate-x-0
+        `}
       >
 
-        {/* SIDEBAR HEADER */}
+        {/* Logo */}
+        <div className="h-20 flex items-center px-5 border-b border-white/10">
 
-        <div className="p-5 border-b border-white/10 flex-shrink-0">
-
-          <h1 className="text-3xl font-black text-orange-500">
+          <h1 className="text-2xl font-bold text-orange-500">
             ElanceForge
           </h1>
 
         </div>
 
-        {/* SIDEBAR MENU */}
+        {/* Navigation */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-2">
 
-        <div className="flex-1 overflow-y-auto px-5 py-6 space-y-3">
+          {menu.map(
+            ([id, name, icon]) => (
 
-          {menu.map(([id, name, icon]) => (
+              <button
+                key={id}
+                onClick={() => {
 
-            <button
-              key={id}
-              onClick={() => {
-                setPage(id);
-                setOpen(false);
-              }}
-              className={`
-w-full flex items-center gap-3
-px-4 py-3 rounded-2xl
-transition-all duration-200
-${page === id
-                  ? "bg-orange-500 shadow-lg"
-                  : "hover:bg-white/10"
-                }
-`}
-            >
+                  setPage(id);
 
-              {icon}
+                  setOpen(false);
 
-              <span className="font-semibold text-base">
+                }}
+                className={`
+                  w-full
+                  flex items-center gap-3
+                  px-4 py-3
+                  rounded-xl
+                  text-sm font-medium
+                  transition-all
+                  ${
+                    page === id
+                      ? "bg-orange-500 text-white shadow-sm"
+                      : "text-slate-200 hover:bg-white/10"
+                  }
+                `}
+              >
+
+                {icon}
+
                 {name}
-              </span>
 
-            </button>
+              </button>
 
-          ))}
+            )
+          )}
 
         </div>
-
-        {/* LOGOUT BUTTON */}
-
-        <div className="p-5 border-t border-white/10 flex-shrink-0">
+                {/* Logout */}
+        <div className="p-4 border-t border-white/10">
 
           <button
             onClick={logout}
-            className="w-full flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 transition py-3 rounded-2xl font-semibold"
+            className="w-full flex items-center justify-center gap-3 py-3 rounded-xl bg-red-500 hover:bg-red-600 transition text-white text-sm font-medium"
           >
 
             <LogOut size={18} />
@@ -149,30 +231,18 @@ ${page === id
 
         </div>
 
-      </div>
+      </aside>
 
-      {/* OVERLAY */}
+      {/* Main content */}
+      <main className="flex-1 overflow-y-auto mt-16 lg:mt-0">
 
-      {open && (
-
-        <div
-          onClick={() => setOpen(false)}
-          className="fixed inset-0 bg-black/40 z-40 lg:hidden"
-        />
-
-      )}
-
-      {/* PAGE CONTENT */}
-
-      <div className="flex-1 overflow-y-auto mt-16 lg:mt-0">
-
-        <div className="p-4 sm:p-5 lg:p-8 min-h-screen">
+        <div className="p-3 sm:p-4 lg:p-6 min-h-screen">
 
           {pages[page]}
 
         </div>
 
-      </div>
+      </main>
 
     </div>
 

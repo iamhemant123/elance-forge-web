@@ -27,7 +27,7 @@ const ensureDirectory = async () => {
         recursive: true,
       }
     );
-  } catch {}
+  } catch { }
 };
 
 // Make CSV Values Safe

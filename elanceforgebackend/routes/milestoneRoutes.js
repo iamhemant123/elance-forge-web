@@ -1,130 +1,207 @@
 import express from "express";
-
 import Milestone from "../models/Milestone.js";
+import Project from "../models/Project.js";
 
 const router = express.Router();
 
 
-// ================= GET ALL =================
-
+// GET ALL MILESTONES
 router.get("/", async (req, res) => {
+  try {
 
-try {
+    const milestones = await Milestone.find()
+      .populate("projectId")
+      .sort({
+        createdAt: -1,
+      });
 
-const milestones = await Milestone.find()
-.populate("projectId")
-.sort({ createdAt: -1 });
+    res.status(200).json({
+      success: true,
+      milestones,
+    });
 
-res.status(200).json({
-success: true,
-milestones,
+  } catch (error) {
+
+    console.log(error);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed To Fetch Milestones",
+    });
+
+  }
 });
 
-} catch (error) {
 
-console.log(error);
+// GET CLIENT MILESTONES
+router.get("/client/:email", async (req, res) => {
+  try {
 
-res.status(500).json({
-success: false,
-message: "Failed To Fetch Milestones",
+    const milestones = await Milestone.find({
+      clientEmail: req.params.email
+        .trim()
+        .toLowerCase(),
+    })
+      .populate("projectId")
+      .sort({
+        createdAt: -1,
+      });
+
+    res.status(200).json(milestones);
+
+  } catch (error) {
+
+    console.log(error);
+
+    res.status(500).json({
+      success: false,
+      message:
+        "Failed To Fetch Client Milestones",
+    });
+
+  }
 });
 
-}
 
-});
-
-
-// ================= CREATE =================
+// CREATE MILESTONE
 
 router.post("/", async (req, res) => {
+  try {
 
-try {
+    const project =
+      await Project.findById(
+        req.body.projectId
+      );
 
-const milestone = await Milestone.create(req.body);
+    if (!project) {
+      return res.status(404).json({
+        success: false,
+        message: "Project Not Found",
+      });
+    }
 
-const populatedMilestone = await milestone.populate("projectId");
+    const milestone =
+      await Milestone.create({
+        projectId:
+          req.body.projectId,
 
-res.status(201).json({
-success: true,
-milestone: populatedMilestone,
+        title:
+          req.body.title,
+
+        assignedTo:
+          req.body.assignedTo,
+
+        deadline:
+          req.body.deadline,
+
+        priority:
+          req.body.priority,
+
+        notes:
+          req.body.notes,
+
+        status:
+          req.body.status ||
+          "Pending",
+
+        progress:
+          req.body.progress ||
+          0,
+
+        // Auto client email from project
+        clientEmail:
+          project.clientEmail,
+      });
+
+    const populatedMilestone =
+      await milestone.populate(
+        "projectId"
+      );
+
+    res.status(201).json({
+      success: true,
+      milestone:
+        populatedMilestone,
+    });
+
+  } catch (error) {
+
+    console.log(error);
+
+    res.status(500).json({
+      success: false,
+      message:
+        error.message,
+    });
+
+  }
 });
 
-} catch (error) {
-
-console.log(error);
-
-res.status(500).json({
-success: false,
-message: "Failed To Create Milestone",
-});
-
-}
-
-});
-
-
-// ================= DELETE =================
-
+// DELETE MILESTONE
 router.delete("/:id", async (req, res) => {
+  try {
 
-try {
+    await Milestone.findByIdAndDelete(
+      req.params.id
+    );
 
-await Milestone.findByIdAndDelete(req.params.id);
+    res.status(200).json({
+      success: true,
+      message:
+        "Milestone Deleted Successfully",
+    });
 
-res.status(200).json({
-success: true,
-message: "Milestone Deleted Successfully",
+  } catch (error) {
+
+    console.log(error);
+
+    res.status(500).json({
+      success: false,
+      message: "Delete Failed",
+    });
+
+  }
 });
 
-} catch (error) {
 
-console.log(error);
-
-res.status(500).json({
-success: false,
-message: "Delete Failed",
-});
-
-}
-
-});
-
-
-// ================= UPDATE STATUS =================
-
+// UPDATE STATUS & PROGRESS
 router.put("/status/:id", async (req, res) => {
+  try {
 
-try {
+    const {
+      status,
+      progress,
+    } = req.body;
 
-const { status, progress } = req.body;
+    const updatedMilestone =
+      await Milestone.findByIdAndUpdate(
+        req.params.id,
+        {
+          status,
+          progress,
+        },
+        {
+          new: true,
+        }
+      ).populate("projectId");
 
-const updatedMilestone = await Milestone.findByIdAndUpdate(
-req.params.id,
-{
-status,
-progress,
-},
-{
-new: true,
-}
-).populate("projectId");
+    res.status(200).json({
+      success: true,
+      milestone:
+        updatedMilestone,
+    });
 
-res.status(200).json({
-success: true,
-milestone: updatedMilestone,
-});
+  } catch (error) {
 
-} catch (error) {
+    console.log(error);
 
-console.log(error);
+    res.status(500).json({
+      success: false,
+      message:
+        "Update Failed",
+    });
 
-res.status(500).json({
-success: false,
-message: "Update Failed",
-});
-
-}
-
+  }
 });
 
 export default router;

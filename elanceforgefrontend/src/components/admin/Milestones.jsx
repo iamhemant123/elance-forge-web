@@ -1,14 +1,24 @@
 import { useEffect, useState } from "react";
 
 const Milestones = () => {
+
+  // Milestone records
   const [milestones, setMilestones] = useState([]);
+
+  // Project list for dropdown
   const [projects, setProjects] = useState([]);
 
+  // Create milestone modal
   const [showModal, setShowModal] = useState(false);
 
+  // Real page loading
+  const [loading, setLoading] = useState(true);
+
+  // Corner notifications
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
 
+  // Form values
   const [formData, setFormData] = useState({
     projectId: "",
     title: "",
@@ -20,8 +30,11 @@ const Milestones = () => {
     notes: "",
   });
 
+  // Load available projects
   const fetchProjects = async () => {
+
     try {
+
       const res = await fetch(
         `${import.meta.env.VITE_API_URL}/api/projects`
       );
@@ -29,15 +42,21 @@ const Milestones = () => {
       const data = await res.json();
 
       if (data.success) {
-        setProjects(data.projects);
+        setProjects(data.projects || []);
       }
+
     } catch (error) {
+
       console.log(error);
+
     }
   };
 
+  // Load milestone list
   const fetchMilestones = async () => {
+
     try {
+
       const res = await fetch(
         `${import.meta.env.VITE_API_URL}/api/milestones`
       );
@@ -45,58 +64,79 @@ const Milestones = () => {
       const data = await res.json();
 
       if (data.success) {
-        setMilestones(data.milestones);
+        setMilestones(data.milestones || []);
       }
+
     } catch (error) {
+
       console.log(error);
+
     }
   };
 
+  // Status based progress
   const getProgress = (status) => {
+
     if (status === "Pending") return 0;
+
     if (status === "Working") return 40;
+
     if (status === "Review") return 80;
+
     if (status === "Completed") return 100;
 
     return 0;
+
   };
 
+  // Progress bar color
   const getBarColor = (status) => {
-    if (status === "Pending")
-      return "bg-orange-500";
 
-    if (status === "Working")
-      return "bg-blue-500";
+    if (status === "Pending") return "bg-orange-500";
 
-    if (status === "Review")
-      return "bg-yellow-500";
+    if (status === "Working") return "bg-blue-500";
 
-    if (status === "Completed")
-      return "bg-green-500";
+    if (status === "Review") return "bg-yellow-500";
+
+    if (status === "Completed") return "bg-green-500";
 
     return "bg-orange-500";
+
   };
 
+  // Success popup
   const showSuccess = (msg) => {
+
     setSuccess(msg);
 
     setTimeout(() => {
+
       setSuccess("");
-    }, 5000);
+
+    }, 3000);
+
   };
 
+  // Error popup
   const showError = (msg) => {
+
     setError(msg);
 
     setTimeout(() => {
+
       setError("");
-    }, 5000);
+
+    }, 3000);
+
   };
 
+  // Create new milestone
   const createMilestone = async (e) => {
+
     e.preventDefault();
 
     try {
+
       const progress = getProgress(
         formData.status
       );
@@ -106,8 +146,7 @@ const Milestones = () => {
         {
           method: "POST",
           headers: {
-            "Content-Type":
-              "application/json",
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({
             ...formData,
@@ -119,6 +158,7 @@ const Milestones = () => {
       const data = await res.json();
 
       if (data.success) {
+
         setMilestones((prev) => [
           data.milestone,
           ...prev,
@@ -140,16 +180,22 @@ const Milestones = () => {
           progress: 0,
           notes: "",
         });
+
       }
+
     } catch (error) {
+
       console.log(error);
 
       showError("Something Went Wrong");
+
     }
   };
-
+  // Delete milestone
   const deleteMilestone = async (id) => {
+
     try {
+
       await fetch(
         `${import.meta.env.VITE_API_URL}/api/milestones/${id}`,
         {
@@ -167,18 +213,24 @@ const Milestones = () => {
       showSuccess(
         "Milestone Deleted Successfully"
       );
+
     } catch (error) {
+
       console.log(error);
 
       showError("Delete Failed");
+
     }
   };
 
+  // Update milestone status
   const updateStatus = async (
     id,
     status
   ) => {
+
     try {
+
       const progress =
         getProgress(status);
 
@@ -200,6 +252,7 @@ const Milestones = () => {
       const data = await res.json();
 
       if (data.success) {
+
         setMilestones((prev) =>
           prev.map((milestone) =>
             milestone._id === id
@@ -215,125 +268,214 @@ const Milestones = () => {
         showSuccess(
           "Milestone Updated Successfully"
         );
+
       }
+
     } catch (error) {
+
       console.log(error);
 
       showError("Update Failed");
+
     }
   };
 
+  // Initial page load
   useEffect(() => {
-    fetchProjects();
-    fetchMilestones();
+
+    const loadData = async () => {
+
+      try {
+
+        setLoading(true);
+
+        await Promise.all([
+          fetchProjects(),
+          fetchMilestones(),
+        ]);
+
+      } finally {
+
+        setLoading(false);
+
+      }
+
+    };
+
+    loadData();
+
   }, []);
 
+  // Real loading state
+  if (loading) {
+
+    return (
+
+      <div className="min-h-[70vh] flex items-center justify-center">
+
+        <div className="bg-white border border-slate-200 rounded-2xl px-6 py-4 shadow-sm flex items-center gap-3">
+
+          <div className="h-5 w-5 border-2 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+
+          <span className="text-sm font-medium text-slate-600">
+            Loading Milestones...
+          </span>
+
+        </div>
+
+      </div>
+
+    );
+
+  }
+
   return (
-    <div className="w-full overflow-hidden px-3 sm:px-5 md:px-7 py-5">
+
+    <div className="w-full min-h-screen bg-slate-50 px-3 md:px-4 py-4">
+
+      {/* Success notification */}
       {success && (
-        <div className="fixed top-4 right-4 left-4 sm:left-auto sm:right-5 z-50 bg-green-500 text-white px-5 py-4 rounded-2xl shadow-2xl font-semibold text-sm sm:text-base text-center">
+
+        <div className="fixed top-5 right-5 z-[9999] bg-green-500 text-white px-4 py-3 rounded-xl shadow-xl text-sm font-medium max-w-xs">
           {success}
         </div>
+
       )}
 
+      {/* Error notification */}
       {error && (
-        <div className="fixed top-4 right-4 left-4 sm:left-auto sm:right-5 z-50 bg-red-500 text-white px-5 py-4 rounded-2xl shadow-2xl font-semibold text-sm sm:text-base text-center">
+
+        <div className="fixed top-5 right-5 z-[9999] bg-red-500 text-white px-4 py-3 rounded-xl shadow-xl text-sm font-medium max-w-xs">
           {error}
         </div>
+
       )}
 
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-7">
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-black break-words leading-tight">
-          Milestones
-        </h1>
+      {/* Page heading */}
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-5">
 
+        <div>
+
+          <h1 className="text-2xl md:text-3xl font-bold text-slate-800">
+            Milestones
+          </h1>
+
+          <p className="text-sm text-slate-500 mt-1">
+            Track project delivery and team progress
+          </p>
+
+        </div>
+
+        {/* Create milestone button */}
         <button
           onClick={() =>
             setShowModal(true)
           }
-          className="bg-orange-500 hover:bg-orange-600 transition text-white px-5 sm:px-6 py-3 sm:py-4 rounded-2xl font-semibold w-full lg:w-auto text-sm sm:text-base"
+          className="bg-orange-500 hover:bg-orange-600 transition text-white px-5 py-3 rounded-xl font-medium text-sm"
         >
           + Add Milestone
         </button>
+
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-7">
-        <div className="bg-white rounded-2xl md:rounded-3xl p-5 shadow">
-          <p className="text-gray-500 text-sm md:text-base">
+      {/* Quick statistics */}
+      <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 mb-5">
+
+        <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+
+          <p className="text-xs text-slate-500">
             Total
           </p>
 
-          <h1 className="text-3xl md:text-5xl font-black mt-2">
+          <h2 className="text-2xl font-bold mt-1">
             {milestones.length}
-          </h1>
+          </h2>
+
         </div>
 
-        <div className="bg-white rounded-2xl md:rounded-3xl p-5 shadow">
-          <p className="text-gray-500 text-sm md:text-base">
+        <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+
+          <p className="text-xs text-slate-500">
             Pending
           </p>
 
-          <h1 className="text-3xl md:text-5xl font-black mt-2 text-orange-500">
+          <h2 className="text-2xl font-bold mt-1 text-orange-500">
             {
               milestones.filter(
                 (m) =>
                   m.status === "Pending"
               ).length
             }
-          </h1>
-        </div>
+          </h2>
 
-        <div className="bg-white rounded-2xl md:rounded-3xl p-5 shadow">
-          <p className="text-gray-500 text-sm md:text-base">
+        </div>
+        <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+
+          <p className="text-xs text-slate-500">
             Working
           </p>
 
-          <h1 className="text-3xl md:text-5xl font-black mt-2 text-blue-500">
+          <h2 className="text-2xl font-bold mt-1 text-blue-500">
             {
               milestones.filter(
                 (m) =>
                   m.status === "Working"
               ).length
             }
-          </h1>
+          </h2>
+
         </div>
 
-        <div className="bg-white rounded-2xl md:rounded-3xl p-5 shadow">
-          <p className="text-gray-500 text-sm md:text-base">
+        <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+
+          <p className="text-xs text-slate-500">
             Completed
           </p>
 
-          <h1 className="text-3xl md:text-5xl font-black mt-2 text-green-500">
+          <h2 className="text-2xl font-bold mt-1 text-green-500">
             {
               milestones.filter(
                 (m) =>
                   m.status === "Completed"
               ).length
             }
-          </h1>
+          </h2>
+
         </div>
+
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 md:gap-6">
+      {/* Milestone cards */}
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+
         {Array.isArray(milestones) &&
           milestones.map((milestone) => (
+
             <div
               key={milestone._id}
-              className="bg-white rounded-2xl md:rounded-3xl p-4 sm:p-5 md:p-7 shadow-lg border hover:shadow-2xl transition overflow-hidden"
+              className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 hover:shadow-md transition"
             >
-              <div className="flex flex-col xl:flex-row xl:items-start xl:justify-between gap-4 mb-5">
+
+              {/* Card header */}
+              <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-3 mb-4">
+
                 <div className="min-w-0">
-                  <p className="text-xs sm:text-sm text-gray-500 break-words">
-                    {milestone.projectId
-                      ?.projectName ||
-                      "No Project"}
+
+                  <p className="text-xs text-slate-500">
+                    {
+                      milestone.projectId
+                        ?.projectName ||
+                      "No Project"
+                    }
                   </p>
 
-                  <h1 className="text-xl sm:text-2xl md:text-4xl font-black break-words leading-tight">
+                  <h2 className="text-lg md:text-xl font-semibold text-slate-800 mt-1 break-words">
                     {milestone.title}
-                  </h1>
+                  </h2>
+
                 </div>
 
+                {/* Status selector */}
                 <select
                   value={milestone.status}
                   onChange={(e) =>
@@ -342,141 +484,181 @@ const Milestones = () => {
                       e.target.value
                     )
                   }
-                  className="border rounded-xl md:rounded-2xl px-4 py-3 outline-none w-full xl:w-auto text-sm md:text-base"
+                  className="border border-slate-200 rounded-xl px-3 py-2 text-sm outline-none bg-white"
                 >
+
                   <option>Pending</option>
                   <option>Working</option>
                   <option>Review</option>
                   <option>Completed</option>
+
                 </select>
+
               </div>
 
-              <div className="mb-5">
-                <div className="flex items-center justify-between gap-3 mb-2">
-                  <p className="font-medium text-sm sm:text-base">
+              {/* Progress section */}
+              <div className="mb-4">
+
+                <div className="flex items-center justify-between mb-2">
+
+                  <p className="text-xs font-medium text-slate-600">
                     Progress
                   </p>
 
                   <p
-                    className={`font-bold text-sm sm:text-base ${milestone.status ===
-                        "Completed"
+                    className={`text-xs font-semibold ${milestone.status === "Completed"
                         ? "text-green-500"
-                        : milestone.status ===
-                          "Review"
+                        : milestone.status === "Review"
                           ? "text-yellow-500"
-                          : milestone.status ===
-                            "Working"
+                          : milestone.status === "Working"
                             ? "text-blue-500"
                             : "text-orange-500"
                       }`}
                   >
                     {milestone.progress}%
                   </p>
+
                 </div>
 
-                <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+
                   <div
                     style={{
                       width: `${milestone.progress}%`,
                     }}
-                    className={`h-3 rounded-full transition-all duration-700 ${getBarColor(
+                    className={`h-2 rounded-full transition-all duration-500 ${getBarColor(
                       milestone.status
                     )}`}
                   ></div>
+
                 </div>
+
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm md:text-base">
+              {/* Milestone details */}
+              <div className="grid grid-cols-2 gap-3 text-sm">
+
                 <div>
-                  <p className="text-gray-500">
+
+                  <p className="text-slate-500 text-xs">
                     Assigned To
                   </p>
 
-                  <h2 className="font-semibold break-words">
+                  <h3 className="font-medium text-slate-800 break-words">
                     {milestone.assignedTo}
-                  </h2>
+                  </h3>
+
                 </div>
 
                 <div>
-                  <p className="text-gray-500">
+
+                  <p className="text-slate-500 text-xs">
                     Deadline
                   </p>
 
-                  <h2 className="font-semibold text-red-500 break-words">
+                  <h3 className="font-medium text-red-500 break-words">
                     {milestone.deadline}
-                  </h2>
+                  </h3>
+
                 </div>
 
                 <div>
-                  <p className="text-gray-500">
+
+                  <p className="text-slate-500 text-xs">
                     Priority
                   </p>
 
-                  <h2 className="font-semibold break-words">
+                  <h3 className="font-medium text-slate-800">
                     {milestone.priority}
-                  </h2>
+                  </h3>
+
                 </div>
 
                 <div>
-                  <p className="text-gray-500">
+
+                  <p className="text-slate-500 text-xs">
                     Created
                   </p>
 
-                  <h2 className="font-semibold break-words">
+                  <h3 className="font-medium text-slate-800">
                     {new Date(
                       milestone.createdAt
                     ).toLocaleDateString()}
-                  </h2>
-                </div>
-              </div>
+                  </h3>
 
+                </div>
+
+              </div>
+              {/* Notes section */}
               {milestone.notes && (
-                <div className="mt-5 bg-orange-50 border border-orange-100 rounded-2xl p-4">
-                  <p className="text-sm text-gray-700 break-words leading-7">
+
+                <div className="mt-4 bg-orange-50 border border-orange-100 rounded-xl p-3">
+
+                  <p className="text-xs text-slate-500 mb-1">
+                    Notes
+                  </p>
+
+                  <p className="text-sm text-slate-700 leading-6 break-words">
                     {milestone.notes}
                   </p>
+
                 </div>
+
               )}
 
+              {/* Delete action */}
               <button
                 onClick={() =>
                   deleteMilestone(
                     milestone._id
                   )
                 }
-                className="mt-6 bg-red-100 hover:bg-red-200 transition text-red-600 px-5 py-3 rounded-xl md:rounded-2xl font-medium w-full text-sm md:text-base"
+                className="mt-4 w-full bg-red-100 hover:bg-red-200 text-red-600 rounded-xl py-3 text-sm font-medium transition"
               >
                 Delete Milestone
               </button>
+
             </div>
+
           ))}
+
       </div>
 
+      {/* Create milestone modal */}
       {showModal && (
+
         <div className="fixed inset-0 bg-black/50 z-50 overflow-y-auto">
-          <div className="min-h-screen flex items-start md:items-center justify-center px-2 sm:px-4 py-10 md:py-6">
+
+          <div className="min-h-screen flex items-center justify-center p-3">
+
             <form
               onSubmit={createMilestone}
-              className="bg-white w-full max-w-2xl rounded-2xl md:rounded-3xl p-4 sm:p-5 md:p-7 space-y-5"
+              className="bg-white w-full max-w-2xl rounded-2xl p-5 space-y-4 max-h-[90vh] overflow-y-auto"
             >
-              <div className="flex items-center justify-between sticky top-0 bg-white pb-3 z-10">
-                <h1 className="text-2xl sm:text-3xl md:text-4xl font-black">
+
+              {/* Modal header */}
+              <div className="flex items-center justify-between">
+
+                <h2 className="text-xl md:text-2xl font-semibold text-slate-800">
                   Create Milestone
-                </h1>
+                </h2>
 
                 <button
                   type="button"
                   onClick={() =>
                     setShowModal(false)
                   }
-                  className="text-3xl font-bold text-gray-500"
+                  className="text-2xl font-bold text-slate-500"
                 >
                   ×
                 </button>
+
               </div>
 
+              {/* Project */}
               <div>
-                <label className="font-semibold mb-2 block text-sm md:text-base">
+
+                <label className="block text-sm font-medium mb-2">
                   Select Project
                 </label>
 
@@ -486,164 +668,157 @@ const Milestones = () => {
                   onChange={(e) =>
                     setFormData({
                       ...formData,
-                      projectId:
-                        e.target.value,
+                      projectId: e.target.value,
                     })
                   }
-                  className="w-full border-2 border-gray-200 focus:border-orange-500 rounded-xl md:rounded-2xl p-3 md:p-4 outline-none text-sm md:text-base bg-white"
+                  className="w-full border border-slate-200 rounded-xl p-3 outline-none focus:border-orange-500"
                 >
+
                   <option value="">
                     Choose Project
                   </option>
 
                   {Array.isArray(projects) &&
-                    projects.map(
-                      (project) => (
-                        <option
-                          key={project._id}
-                          value={
-                            project._id
-                          }
-                        >
-                          {
-                            project.projectName
-                          }
-                        </option>
-                      )
-                    )}
+                    projects.map((project) => (
+
+                      <option
+                        key={project._id}
+                        value={project._id}
+                      >
+                        {project.projectName}
+                      </option>
+
+                    ))}
+
                 </select>
+
               </div>
 
+              {/* Title */}
               <div>
-                <label className="font-semibold mb-2 block text-sm md:text-base">
+
+                <label className="block text-sm font-medium mb-2">
                   Milestone Title
                 </label>
 
                 <input
                   type="text"
-                  placeholder="Enter milestone title"
                   required
                   value={formData.title}
                   onChange={(e) =>
                     setFormData({
                       ...formData,
-                      title:
-                        e.target.value,
+                      title: e.target.value,
                     })
                   }
-                  className="w-full border-2 border-gray-200 focus:border-orange-500 rounded-xl md:rounded-2xl p-3 md:p-4 outline-none text-sm md:text-base"
+                  className="w-full border border-slate-200 rounded-xl p-3 outline-none focus:border-orange-500"
+                  placeholder="Enter milestone title"
                 />
+
               </div>
 
+              {/* Assigned Team */}
               <div>
-                <label className="font-semibold mb-2 block text-sm md:text-base">
+
+                <label className="block text-sm font-medium mb-2">
                   Assigned Team
                 </label>
 
                 <input
                   type="text"
-                  placeholder="Frontend / Backend / Design"
                   value={formData.assignedTo}
                   onChange={(e) =>
                     setFormData({
                       ...formData,
-                      assignedTo:
-                        e.target.value,
+                      assignedTo: e.target.value,
                     })
                   }
-                  className="w-full border-2 border-gray-200 focus:border-orange-500 rounded-xl md:rounded-2xl p-3 md:p-4 outline-none text-sm md:text-base"
+                  className="w-full border border-slate-200 rounded-xl p-3 outline-none focus:border-orange-500"
+                  placeholder="Frontend / Backend / Design"
                 />
+
               </div>
 
-              <div>
-                <label className="font-semibold mb-2 block text-sm md:text-base">
-                  Deadline
-                </label>
+              {/* Deadline + Priority */}
+              <div className="grid md:grid-cols-2 gap-4">
 
-                <input
-                  type="date"
-                  required
-                  value={formData.deadline}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      deadline:
-                        e.target.value,
-                    })
-                  }
-                  className="w-full border-2 border-gray-200 focus:border-orange-500 rounded-xl md:rounded-2xl p-3 md:p-4 outline-none text-sm md:text-base"
-                />
+                <div>
+
+                  <label className="block text-sm font-medium mb-2">
+                    Deadline
+                  </label>
+
+                  <input
+                    type="date"
+                    required
+                    value={formData.deadline}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        deadline: e.target.value,
+                      })
+                    }
+                    className="w-full border border-slate-200 rounded-xl p-3 outline-none focus:border-orange-500"
+                  />
+
+                </div>
+
+                <div>
+
+                  <label className="block text-sm font-medium mb-2">
+                    Priority
+                  </label>
+
+                  <select
+                    value={formData.priority}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        priority: e.target.value,
+                      })
+                    }
+                    className="w-full border border-slate-200 rounded-xl p-3 outline-none focus:border-orange-500 bg-white"
+                  >
+
+                    <option>Low</option>
+                    <option>Medium</option>
+                    <option>High</option>
+                    <option>Urgent</option>
+
+                  </select>
+
+                </div>
+
               </div>
 
+              {/* Notes */}
               <div>
-                <label className="font-semibold mb-2 block text-sm md:text-base">
-                  Priority Level
-                </label>
 
-                <select
-                  value={formData.priority}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      priority:
-                        e.target.value,
-                    })
-                  }
-                  className="w-full border-2 border-gray-200 focus:border-orange-500 rounded-xl md:rounded-2xl p-3 md:p-4 outline-none text-sm md:text-base bg-white"
-                >
-                  <option>Low</option>
-                  <option>Medium</option>
-                  <option>High</option>
-                  <option>Urgent</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="font-semibold mb-2 block text-sm md:text-base">
-                  Milestone Status
-                </label>
-
-                <select
-                  value={formData.status}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      status:
-                        e.target.value,
-                    })
-                  }
-                  className="w-full border-2 border-gray-200 focus:border-orange-500 rounded-xl md:rounded-2xl p-3 md:p-4 outline-none text-sm md:text-base bg-white"
-                >
-                  <option>Pending</option>
-                  <option>Working</option>
-                  <option>Review</option>
-                  <option>Completed</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="font-semibold mb-2 block text-sm md:text-base">
+                <label className="block text-sm font-medium mb-2">
                   Notes
                 </label>
 
                 <textarea
-                  placeholder="Write milestone notes"
+                  rows="4"
                   value={formData.notes}
                   onChange={(e) =>
                     setFormData({
                       ...formData,
-                      notes:
-                        e.target.value,
+                      notes: e.target.value,
                     })
                   }
-                  className="w-full border-2 border-gray-200 focus:border-orange-500 rounded-xl md:rounded-2xl p-3 md:p-4 outline-none h-28 resize-none text-sm md:text-base"
+                  className="w-full border border-slate-200 rounded-xl p-3 outline-none focus:border-orange-500 resize-none"
+                  placeholder="Milestone notes..."
                 />
+
               </div>
 
+              {/* Buttons */}
               <div className="flex flex-col sm:flex-row gap-3 pt-2">
+
                 <button
                   type="submit"
-                  className="w-full bg-orange-500 hover:bg-orange-600 transition text-white py-3 md:py-4 rounded-xl md:rounded-2xl font-semibold text-sm md:text-base"
+                  className="flex-1 bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-xl font-medium transition"
                 >
                   Create Milestone
                 </button>
@@ -653,17 +828,25 @@ const Milestones = () => {
                   onClick={() =>
                     setShowModal(false)
                   }
-                  className="w-full bg-gray-200 hover:bg-gray-300 transition py-3 md:py-4 rounded-xl md:rounded-2xl font-semibold text-sm md:text-base"
+                  className="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-800 py-3 rounded-xl font-medium transition"
                 >
                   Cancel
                 </button>
+
               </div>
+
             </form>
+
           </div>
+
         </div>
+
       )}
+
     </div>
+
   );
+
 };
 
 export default Milestones;

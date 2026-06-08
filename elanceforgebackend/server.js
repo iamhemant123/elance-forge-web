@@ -14,11 +14,15 @@ import rateLimit from "express-rate-limit";
 
 // Local files
 import connectDB from "./config/db.js";
+
 import contactRoutes from "./routes/contactRoutes.js";
 import chatRoutes from "./routes/chatRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import projectRoutes from "./routes/projectRoutes.js";
 import milestoneRoutes from "./routes/milestoneRoutes.js";
+import paymentRoutes from "./routes/paymentRoutes.js";
+import clientAuthRoutes from "./routes/clientAuthRoutes.js";
+import documentRoutes from "./routes/documentRoutes.js";
 
 // App
 const app = express();
@@ -53,11 +57,17 @@ app.use(
 
 // Routes
 app.use("/api", contactRoutes);
-app.use("/api", chatRoutes);
-app.use("/api/admin",adminRoutes);
-app.use("/api/projects",projectRoutes);
-app.use("/api/milestones", milestoneRoutes);
 
+app.use("/api", chatRoutes);
+
+app.use("/api/client", clientAuthRoutes);
+
+app.use("/api/admin", adminRoutes);
+
+app.use("/api/projects", projectRoutes);
+app.use("/api/documents",documentRoutes);
+app.use("/api/milestones", milestoneRoutes);
+app.use("/api/payments", paymentRoutes);
 
 // Home route
 app.get("/", (req, res) => {
