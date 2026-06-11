@@ -1,5 +1,6 @@
-import { useState } from "react";
+
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 
 import {
   LayoutDashboard,
@@ -26,6 +27,26 @@ const Admin = () => {
 
   const navigate =
     useNavigate();
+
+  useEffect(() => {
+
+    const isAuth =
+      localStorage.getItem(
+        "adminAuth"
+      );
+
+    if (!isAuth) {
+
+      navigate(
+        "/admin-login",
+        {
+          replace: true,
+        }
+      );
+
+    }
+
+  }, [navigate]);
 
   // Active page
   const [page, setPage] =
@@ -100,7 +121,10 @@ const Admin = () => {
     );
 
     navigate(
-      "/admin-login"
+      "/admin-login",
+      {
+        replace: true,
+      }
     );
 
   };
@@ -157,10 +181,9 @@ const Admin = () => {
           z-50
           flex flex-col
           transition-transform duration-300
-          ${
-            open
-              ? "translate-x-0"
-              : "-translate-x-full"
+          ${open
+            ? "translate-x-0"
+            : "-translate-x-full"
           }
           lg:translate-x-0
         `}
@@ -197,10 +220,9 @@ const Admin = () => {
                   rounded-xl
                   text-sm font-medium
                   transition-all
-                  ${
-                    page === id
-                      ? "bg-orange-500 text-white shadow-sm"
-                      : "text-slate-200 hover:bg-white/10"
+                  ${page === id
+                    ? "bg-orange-500 text-white shadow-sm"
+                    : "text-slate-200 hover:bg-white/10"
                   }
                 `}
               >
@@ -215,7 +237,7 @@ const Admin = () => {
           )}
 
         </div>
-                {/* Logout */}
+        {/* Logout */}
         <div className="p-4 border-t border-white/10">
 
           <button

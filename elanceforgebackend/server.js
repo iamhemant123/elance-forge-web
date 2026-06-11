@@ -23,7 +23,7 @@ import milestoneRoutes from "./routes/milestoneRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 import clientAuthRoutes from "./routes/clientAuthRoutes.js";
 import documentRoutes from "./routes/documentRoutes.js";
-
+import otpRoutes from "./routes/otpRoutes.js";
 // App
 const app = express();
 
@@ -68,7 +68,9 @@ app.use("/api/projects", projectRoutes);
 app.use("/api/documents",documentRoutes);
 app.use("/api/milestones", milestoneRoutes);
 app.use("/api/payments", paymentRoutes);
-
+app.use("/api/otp",otpRoutes);
+app.use("/api/otp", otpRoutes);
+console.log("OTP Routes Loaded");
 // Home route
 app.get("/", (req, res) => {
   res.json({
