@@ -13,10 +13,8 @@ import {
 
 const router = express.Router();
 
-
-// ========================================
 // CLIENT DROPDOWN
-// ========================================
+
 
 router.get(
   "/clients",
@@ -24,20 +22,14 @@ router.get(
 );
 
 
-// ========================================
 // VERIFY CLIENT
-// ========================================
 
 router.post(
   "/verify-client",
   verifyClient
 );
 
-
-// ========================================
 // UPLOAD DOCUMENT
-// ========================================
-
 router.post(
   "/upload",
   upload.single("file"),
@@ -45,9 +37,7 @@ router.post(
 );
 
 
-// ========================================
 // GET ALL DOCUMENTS
-// ========================================
 
 router.get(
   "/",
@@ -55,31 +45,20 @@ router.get(
 );
 
 
-// ========================================
-// DOWNLOAD DOCUMENT
-// IMPORTANT: MUST BE ABOVE "/:id"
-// ========================================
-
 router.get(
   "/download/:id",
   downloadDocument
 );
 
 
-// ========================================
 // VIEW DOCUMENT
-// ========================================
 
 router.get(
   "/:id",
   getDocument
 );
 
-
-// ========================================
 // DELETE DOCUMENT
-// ========================================
-
 router.delete(
   "/:id",
   deleteDocument

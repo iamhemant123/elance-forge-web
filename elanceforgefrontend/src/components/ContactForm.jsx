@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from "react";
 import { FaPaperPlane } from "react-icons/fa";
 import AnimatedButton from "../components/AnimatedButton";
+import emailjs from "@emailjs/browser";
 
 const subjectOptions = [
       "Graphic Designing",
@@ -56,7 +57,6 @@ const ContactForm = ({ onClose }) => {
       }, []);
 
       const handleSubmit = async (e) => {
-
             e.preventDefault();
 
             if (!emailRegex.test(formData.email)) {
@@ -72,54 +72,89 @@ const ContactForm = ({ onClose }) => {
             setSuccess("");
 
             try {
+                  // SAVE TO MONGODB FIRST
 
-                  const response = await fetch(`${import.meta.env.VITE_API_URL}/api/contact`, {
-                        method: "POST",
-                        headers: {
-                              "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify(formData),
-                  });
+                  const response = await fetch(
+                        `${import.meta.env.VITE_API_URL}/api/contact`,
+                        {
+                              method: "POST",
+                              headers: {
+                                    "Content-Type": "application/json",
+                              },
+                              body: JSON.stringify(formData),
+                        }
+                  );
 
                   const data = await response.json().catch(() => ({}));
 
                   if (!response.ok) {
-                        throw new Error(data.message || "Something went wrong");
+                        throw new Error(
+                              data.message || "Something went wrong"
+                        );
                   }
 
+                  // SHOW SUCCESS IMMEDIATELY
 
-                  // SUCCESS RESPONSE FROM BACKEND
+                  setSuccess(
+                        "Thank You For Contacting ElanceForge"
+                  );
 
-                  setSuccess("Thank You For Contacting ElanceForge ");
+                  // SEND EMAIL IN BACKGROUND
 
+                  emailjs
+                        .send(
+                              import.meta.env.VITE_EMAILJS_SERVICE_ID,
+                              import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+                              {
+                                    name: formData.name,
+                                    email: formData.email,
+                                    company: formData.company,
+                                    subject: formData.subject,
+                                    message: formData.message,
+                              },
+                              import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+                        )
+                        .then((response) => {
+                              console.log(
+                                    "Admin Email + Auto Reply Sent"
+                              );
+                              console.log(response);
+                        })
+                        .catch((error) => {
+                              console.error(
+                                    "EmailJS Error:",
+                                    error
+                              );
+                        });
 
-                  // FORM RESET INSTANTLY
+                  // RESET FORM
 
-                  setFormData(initialState);
+                  setFormData({
+                        name: "",
+                        email: "",
+                        company: "",
+                        subject: "",
+                        message: "",
+                  });
 
-
-                  // AUTO HIDE POPUP
+                  // AUTO CLOSE POPUP
 
                   setTimeout(() => {
-
                         setSuccess("");
 
                         if (onClose) {
                               onClose();
                         }
-
                   }, 3000);
 
             } catch (err) {
-
-                  setError(err.message || "Failed to send message");
-
+                  setError(
+                        err.message ||
+                        "Failed to send message"
+                  );
             } finally {
-
                   setLoading(false);
-
             }
-
       };
 
       return (

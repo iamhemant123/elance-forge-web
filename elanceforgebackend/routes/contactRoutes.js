@@ -3,9 +3,6 @@ import { body, validationResult } from "express-validator";
 
 import Contact from "../models/Contact.js";
 
-import sendEmail from "../utils/sendEmail.js";
-import saveToExcel from "../utils/saveToExcel.js";
-
 const router = express.Router();
 
 router.post(
@@ -82,102 +79,6 @@ router.post(
                         message: "Message submitted successfully",
                   });
 
-
-                  // BACKGROUND TASKS
-
-                  setImmediate(async () => {
-
-                        try {
-
-                              // ADMIN EMAIL
-
-                              await sendEmail(
-                                    process.env.ADMIN_EMAIL,
-                                    `New Client Inquiry - ${subject}`,
-
-                                    `
-<div style="font-family: Arial, sans-serif; padding: 20px;">
-
-<h2>New Contact Inquiry</h2>
-
-<p>
-<strong>Name :</strong> ${name}
-</p>
-
-<p>
-<strong>Email :</strong> ${email}
-</p>
-
-<p>
-<strong>Company :</strong> ${company || "Not Provided"
-                                    }
-</p>
-
-<p>
-<strong>Subject :</strong> ${subject}
-</p>
-
-<p>
-<strong>Message :</strong>
-</p>
-
-<p>${message}</p>
-
-</div>
-`
-                              );
-
-
-                              // CLIENT EMAIL
-
-                              await sendEmail(
-                                    email,
-                                    "We Received Your Message - ElanceForge",
-
-                                    `
-<div style="font-family: Arial, sans-serif; padding: 20px;">
-
-<h2>Hello ${name},</h2>
-
-<p>
-Thank you for contacting
-<strong>ElanceForge</strong>.
-</p>
-
-<p>
-We have successfully received your message.
-Our team will contact you shortly.
-</p>
-
-<br />
-
-<p>
-Regards,
-<br />
-<strong>ElanceForge Team</strong>
-</p>
-
-</div>
-`
-                              );
-
-
-                              // SAVE TO EXCEL
-
-                              await saveToExcel(newLead);
-
-                              console.log("Background Tasks Completed");
-
-                        } catch (error) {
-
-                              console.log(
-                                    "Background Task Error :",
-                                    error.message
-                              );
-
-                        }
-
-                  });
 
             } catch (error) {
 

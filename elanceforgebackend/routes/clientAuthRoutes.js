@@ -4,10 +4,7 @@ import Document from "../models/Document.js";
 
 const router = express.Router();
 
-
-// ======================================
 // CLIENT LOGIN
-// ======================================
 
 router.post("/login", async (req, res) => {
   try {
@@ -73,9 +70,8 @@ router.post("/login", async (req, res) => {
 });
 
 
-// ======================================
 // CLIENT DOCUMENTS
-// ======================================
+
 
 router.get(
   "/documents/:email",
