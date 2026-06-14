@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   User,
@@ -10,6 +10,40 @@ const ClientLogin = () => {
 
   const navigate =
     useNavigate();
+  useEffect(() => {
+
+    window.history.pushState(
+      null,
+      "",
+      window.location.href
+    );
+
+    const handleBack = () => {
+
+      navigate(
+        "/",
+        {
+          replace: true,
+        }
+      );
+
+    };
+
+    window.addEventListener(
+      "popstate",
+      handleBack
+    );
+
+    return () => {
+
+      window.removeEventListener(
+        "popstate",
+        handleBack
+      );
+
+    };
+
+  }, [navigate]);
 
   // Login form
   const [formData, setFormData] =
@@ -87,7 +121,7 @@ const ClientLogin = () => {
         );
 
         navigate(
-          "/client-dashboard",
+          "/client-dashboard/overview",
           {
             replace: true,
           }
@@ -97,7 +131,7 @@ const ClientLogin = () => {
 
         setError(
           error.message ||
-            "Login Failed"
+          "Login Failed"
         );
 
       } finally {

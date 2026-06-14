@@ -1115,7 +1115,7 @@ const PaymentManagement = () => {
 
                     </button>
 
-                    <button
+                    {/* <button
                       className="bg-blue-600 hover:bg-blue-700 text-white h-11 rounded-xl text-sm font-medium flex items-center justify-center gap-2"
                     >
 
@@ -1123,7 +1123,7 @@ const PaymentManagement = () => {
 
                       Send Payment Link
 
-                    </button>
+                    </button> */}
 
                   </div>
 

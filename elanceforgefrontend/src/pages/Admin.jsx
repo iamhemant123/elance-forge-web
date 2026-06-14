@@ -1,5 +1,9 @@
 
-import { useNavigate } from "react-router-dom";
+import {
+  useNavigate,
+  useLocation,
+  Outlet,
+} from "react-router-dom";
 import { useState, useEffect } from "react";
 
 import {
@@ -15,18 +19,13 @@ import {
   X,
 } from "lucide-react";
 
-import DashboardContent from "../components/admin/DashboardContent";
-import ClientManagement from "../components/admin/ClientManagement";
-import ProjectManagement from "../components/admin/ProjectManagement";
-import Milestones from "../components/admin/Milestones";
-import Analytics from "../components/admin/Analytics";
-import PaymentManagement from "../components/admin/PaymentManagement";
-import ClientDocuments from "../components/admin/ClientDocuments";
+
 
 const Admin = () => {
 
-  const navigate =
-    useNavigate();
+  const navigate = useNavigate();
+
+  const location = useLocation();
 
   useEffect(() => {
 
@@ -48,31 +47,29 @@ const Admin = () => {
 
   }, [navigate]);
 
+  useEffect(() => {
+
+    if (location.pathname === "/admin") {
+
+      navigate(
+        "/admin/dashboard",
+        {
+          replace: true,
+        }
+      );
+
+    }
+
+  }, [location.pathname, navigate]);
   // Active page
-  const [page, setPage] =
-    useState("dashboard");
+
 
   // Mobile sidebar
   const [open, setOpen] =
     useState(false);
 
   // All pages
-  const pages = {
-    dashboard:
-      <DashboardContent />,
-    clients:
-      <ClientManagement />,
-    projects:
-      <ProjectManagement />,
-    milestones:
-      <Milestones />,
-    payments:
-      <PaymentManagement />,
-    documents:
-      <ClientDocuments />,
-    analytics:
-      <Analytics />,
-  };
+
 
   // Sidebar menu
   const menu = [
@@ -116,16 +113,10 @@ const Admin = () => {
   // Admin logout
   const logout = () => {
 
-    localStorage.removeItem(
-      "adminAuth"
-    );
+    localStorage.removeItem("adminAuth");
 
-    navigate(
-      "/admin-login",
-      {
-        replace: true,
-      }
-    );
+    window.location.href =
+      "/admin-login";
 
   };
 
@@ -208,7 +199,7 @@ const Admin = () => {
                 key={id}
                 onClick={() => {
 
-                  setPage(id);
+                  navigate(`/admin/${id}`);
 
                   setOpen(false);
 
@@ -220,7 +211,7 @@ const Admin = () => {
                   rounded-xl
                   text-sm font-medium
                   transition-all
-                  ${page === id
+                  ${location.pathname === `/admin/${id}`
                     ? "bg-orange-500 text-white shadow-sm"
                     : "text-slate-200 hover:bg-white/10"
                   }
@@ -260,7 +251,7 @@ const Admin = () => {
 
         <div className="p-3 sm:p-4 lg:p-6 min-h-screen">
 
-          {pages[page]}
+          <Outlet />
 
         </div>
 

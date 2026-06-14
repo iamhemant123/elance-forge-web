@@ -9,15 +9,16 @@ import {
 } from "lucide-react";
 
 import { useState } from "react";
+import { useNavigate, } from "react-router-dom";
 
 const ClientSidebar = ({
   page,
-  setPage,
   onLogout,
 }) => {
-
   const [open, setOpen] =
     useState(false);
+  const navigate =
+    useNavigate();
 
   const menuItems = [
     {
@@ -97,10 +98,9 @@ const ClientSidebar = ({
           z-50
           shadow-xl
           transition-transform duration-300
-          ${
-            open
-              ? "translate-x-0"
-              : "-translate-x-full lg:translate-x-0"
+          ${open
+            ? "translate-x-0"
+            : "-translate-x-full lg:translate-x-0"
           }
         `}
       >
@@ -124,8 +124,8 @@ const ClientSidebar = ({
                 key={item.id}
                 onClick={() => {
 
-                  setPage(
-                    item.id
+                  navigate(
+                    `/client-dashboard/${item.id}`
                   );
 
                   setOpen(
@@ -140,11 +140,10 @@ const ClientSidebar = ({
                   rounded-xl
                   text-sm font-medium
                   transition-all duration-200
-                  ${
-                    page ===
+                  ${page ===
                     item.id
-                      ? "bg-orange-500 text-white shadow-md"
-                      : "text-slate-200 hover:bg-white/10"
+                    ? "bg-orange-500 text-white shadow-md"
+                    : "text-slate-200 hover:bg-white/10"
                   }
                 `}
               >

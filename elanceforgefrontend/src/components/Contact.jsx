@@ -16,7 +16,7 @@ const fadeUp = {
 const Contact = () => {
   return (
     <>
-      <section id="contact" className="relative overflow-hidden bg-gradient-to-br from-white via-orange-50 to-white py-20 px-5 sm:px-8">
+      <section id="contact" className="relative overflow-hidden bg-gradient-to-br from-white via-orange-50 to-white py-20 px-3 sm:px-6">
         <div className="absolute top-0 left-0 w-80 h-80 bg-orange-200/20 blur-3xl rounded-full" />
         <div className="absolute bottom-0 right-0 w-80 h-80 bg-orange-100/30 blur-3xl rounded-full" />
 
@@ -39,7 +39,7 @@ const Contact = () => {
             </p>
           </motion.div>
 
-          <div className="grid lg:grid-cols-2 gap-10 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10 items-start">
             <div className="space-y-5">
               <EmailCard />
 
@@ -128,7 +128,7 @@ const EmailCard = () => {
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true }}
-      whileHover={{ y: -5, scale: 1.02 }}
+      whileHover={{ y: -5 }}
       whileTap={{ scale: 0.98 }}
       className="group relative overflow-hidden w-full rounded-3xl border border-orange-100 bg-white/70 backdrop-blur-xl p-5 text-left shadow-lg hover:shadow-2xl transition-all duration-500 focus:outline-none focus:ring-2 focus:ring-orange-400"
       aria-label={`Send email to ${email}`}
@@ -136,13 +136,15 @@ const EmailCard = () => {
       <div className="absolute top-0 right-0 w-24 h-24 bg-orange-100/30 rounded-full blur-2xl" />
 
       <div className="relative z-10 flex items-center gap-4">
-        <div className="w-14 h-14 rounded-2xl bg-orange-100 flex items-center justify-center text-orange-600 text-2xl group-hover:rotate-6 transition-transform duration-300">
+        <div className="flex-shrink-0 w-14 h-14 rounded-2xl bg-orange-100 flex items-center justify-center text-orange-600 text-2xl group-hover:rotate-6 transition-transform duration-300">
           <FaEnvelope />
         </div>
 
-        <div>
+        <div className="min-w-0 flex-1">
           <p className="text-sm text-gray-500">Email Address</p>
-          <p className="font-semibold text-gray-900">{email}</p>
+          <p className="font-semibold text-gray-900 break-all">
+            {email}
+          </p>
         </div>
       </div>
     </motion.button>
@@ -159,19 +161,21 @@ const ContactInfoCard = ({ icon, title, text, link }) => {
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true }}
-      whileHover={{ y: -5, scale: 1.02 }}
+      whileHover={{ y: -5 }}
       className="group relative overflow-hidden flex items-center gap-4 rounded-3xl border border-orange-100 bg-white/70 backdrop-blur-xl p-5 shadow-lg hover:shadow-2xl transition-all duration-500"
       aria-label={`${title} - ${text}`}
     >
       <div className="absolute top-0 right-0 w-24 h-24 bg-orange-100/30 rounded-full blur-2xl" />
 
-      <div className="relative z-10 w-14 h-14 rounded-2xl bg-orange-100 flex items-center justify-center text-orange-600 text-2xl group-hover:rotate-6 transition-transform duration-300">
+      <div className="relative z-10 flex-shrink-0 w-14 h-14 rounded-2xl  bg-orange-100 flex items-center justify-center text-orange-600 text-2xl group-hover:rotate-6 transition-transform duration-300">
         {icon}
       </div>
 
-      <div className="relative z-10">
+      <div className="relative z-10 min-w-0 flex-1">
         <p className="text-sm text-gray-500">{title}</p>
-        <p className="font-semibold text-gray-900">{text}</p>
+        <p className="font-semibold text-gray-900 break-words">
+          {text}
+        </p>
       </div>
     </motion.a>
   );

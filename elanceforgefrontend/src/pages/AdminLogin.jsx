@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -23,6 +23,40 @@ const AdminLogin = () => {
 
   const navigate =
     useNavigate();
+  useEffect(() => {
+
+    window.history.pushState(
+      null,
+      "",
+      window.location.href
+    );
+
+    const handleBack = () => {
+
+      navigate(
+        "/",
+        {
+          replace: true,
+        }
+      );
+
+    };
+
+    window.addEventListener(
+      "popstate",
+      handleBack
+    );
+
+    return () => {
+
+      window.removeEventListener(
+        "popstate",
+        handleBack
+      );
+
+    };
+
+  }, [navigate]);
 
   // Login handler
   const handleLogin = (e) => {
@@ -38,7 +72,12 @@ const AdminLogin = () => {
         "true"
       );
 
-      navigate("/admin");
+      navigate(
+        "/admin/dashboard",
+        {
+          replace: true,
+        }
+      );
 
     } else {
 

@@ -1,21 +1,26 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import {
+  useNavigate,
+  useLocation,
+  Outlet,
+} from "react-router-dom";
+
+import {
+  useEffect,
+  useState,
+} from "react";
 
 import ClientSidebar from "../components/client/ClientSidebar";
-import ClientOverview from "../components/client/ClientOverview";
-import ClientProjects from "../components/client/ClientProjects";
-import ClientDocuments from "../components/client/ClientDocuments";
-import ClientPayments from "../components/client/ClientPayments";
 
 const ClientDashboard = () => {
 
-  const navigate = useNavigate();
+  const navigate =
+    useNavigate();
+
+  const location =
+    useLocation();
 
   const [client, setClient] =
     useState(null);
-
-  const [page, setPage] =
-    useState("overview");
 
   useEffect(() => {
 
@@ -45,18 +50,35 @@ const ClientDashboard = () => {
 
   }, [navigate]);
 
+  useEffect(() => {
+
+    if (
+      location.pathname ===
+      "/client-dashboard"
+    ) {
+
+      navigate(
+        "/client-dashboard/overview",
+        {
+          replace: true,
+        }
+      );
+
+    }
+
+  }, [
+    location.pathname,
+    navigate,
+  ]);
+
   const logout = () => {
 
     localStorage.removeItem(
       "client"
     );
 
-    navigate(
-      "/client-login",
-      {
-        replace: true,
-      }
-    );
+    window.location.href =
+      "/client-login";
 
   };
 
@@ -82,46 +104,16 @@ const ClientDashboard = () => {
 
   }
 
-  const renderPage = () => {
-
-    switch (page) {
-
-      case "overview":
-        return (
-          <ClientOverview />
-        );
-
-      case "projects":
-        return (
-          <ClientProjects />
-        );
-
-      case "documents":
-        return (
-          <ClientDocuments />
-        );
-
-      case "payments":
-        return (
-          <ClientPayments />
-        );
-
-      default:
-        return (
-          <ClientOverview />
-        );
-
-    }
-
-  };
-
   return (
 
     <div className="min-h-screen bg-slate-50">
 
       <ClientSidebar
-        page={page}
-        setPage={setPage}
+        page={
+          location.pathname
+            .split("/")
+            .pop()
+        }
         onLogout={logout}
       />
 
@@ -129,7 +121,7 @@ const ClientDashboard = () => {
 
         <div className="p-3 sm:p-4 lg:p-6">
 
-          {renderPage()}
+          <Outlet />
 
         </div>
 
