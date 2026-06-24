@@ -237,6 +237,23 @@ const ClientLogin = () => {
 
           </div>
 
+          {/* Demo Credentials */}
+          <div className="text-center text-sm text-slate-600">
+            <p>
+              Test Name :{" "}
+              <span className="font-semibold text-orange-500">
+                Hemant Kumar Singh
+              </span>
+            </p>
+
+            <p>
+              Test Email :{" "}
+              <span className="font-semibold text-orange-500">
+                hks639900@gmail.com
+              </span>
+            </p>
+          </div>
+
           {/* Login button */}
           <button
             type="submit"
