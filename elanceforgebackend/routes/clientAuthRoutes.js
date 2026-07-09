@@ -3,7 +3,7 @@ import Contact from "../models/Contact.js";
 import Document from "../models/Document.js";
 
 const router = express.Router();
-
+console.log("Client Auth Routes Loaded");
 // CLIENT LOGIN
 
 router.post("/login", async (req, res) => {
