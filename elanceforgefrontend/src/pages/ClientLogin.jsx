@@ -238,7 +238,7 @@ const ClientLogin = () => {
           </div>
 
           {/* Demo Credentials */}
-          <div className="text-center text-sm text-slate-600">
+          {/* <div className="text-center text-sm text-slate-600">
             <p>
               Test Name :{" "}
               <span className="font-semibold text-orange-500">
@@ -252,7 +252,7 @@ const ClientLogin = () => {
                 hks639900@gmail.com
               </span>
             </p>
-          </div>
+          </div> */}
 
           {/* Login button */}
           <button
