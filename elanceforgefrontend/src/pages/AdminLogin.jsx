@@ -162,7 +162,7 @@ const AdminLogin = () => {
         </div>
 
         {/* Demo password */}
-        <p className="text-xs text-center text-slate-500 mt-4">
+        {/* <p className="text-xs text-center text-slate-500 mt-4">
 
           Demo Password :
 
@@ -170,7 +170,7 @@ const AdminLogin = () => {
             elance123
           </span>
 
-        </p>
+        </p> */}
 
         {/* Error message */}
         {error && (
